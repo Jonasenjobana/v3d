@@ -9,21 +9,18 @@
 3. main文件注册全局插件，尽量保持简洁，有配置项可以其他地方创建再引入到
 4. 
 ## 库
-1. ElementUI
+1. Vuetify ElementUI
 2. VueUse
 3. Router
-4. 
 # v3
 ## 响应式
 ### v3 vs v2
 
 ### 响应式
 - Ref和Reactive
-- Shallow系列
+- Shallow
 ## 组合式api
 ## 模板和virtual node
 ## 路由
 ## 表单
 ## vite
-## nuxt框架
-## 小程序

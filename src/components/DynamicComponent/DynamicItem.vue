@@ -20,7 +20,7 @@ const paramsRef = computed(() => {
     return props.dynamicItem!.params
 })
 useSlDrag(wrapRef, {
-    // boundEl: '.bound'
+    position: [50,50]
 });
 onMounted(() => {
     initPosition();

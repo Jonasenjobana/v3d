@@ -1,5 +1,5 @@
 <template>
-    <div style="width: 500px; height: 800px;">
+    <div >
         {{ text }}
     </div>
 </template>

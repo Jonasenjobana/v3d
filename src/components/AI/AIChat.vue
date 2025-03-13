@@ -1,6 +1,5 @@
 <template>
     <div>
-        DAMNS
         <sl-markdown></sl-markdown>
     </div>
 </template>
