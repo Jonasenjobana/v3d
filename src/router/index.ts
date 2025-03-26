@@ -13,7 +13,7 @@ const router = createRouter({
       component: SL3D,
       children: [
         {
-          path: '/three',
+          path: '3D/three',
           name: 'three',
           component: () => import('@/views/3D/three/Three1.vue')
         }

@@ -1,33 +1,31 @@
 <template>
-  <v-layout>
-    <v-navigation-drawer :width="60">
-      <v-list :items="items" density="compact" :max-width="60"> </v-list>
-    </v-navigation-drawer>
-    <v-main height="100vh" width="100%">
-      <v-sheet width="100%" height="100%">
-        <router-view v-slot="{ Component, route }">
-          <keep-alive>
-            <component :is="Component"></component>
-          </keep-alive>
-        </router-view>
-      </v-sheet>
-    </v-main>
-  </v-layout>
+  <sl-layout :items :width="240"></sl-layout>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
-
-const items: any = reactive([
+import { reactive } from "vue";
+import SlLayout from "../layout/SLLayout.vue";
+import type { SLMenuItem } from "../layout/model";
+const items: SLMenuItem[] = reactive([
   {
-    title: 'Three',
-    props: {
-      to: '/three',
-      prependIcon: 'mdi-video-3d-variant',
-      rounded: "xl"
-    },
+    title: "Three",
+    type: 'subheader',
+    children: [
+      {
+        title: 'three1',
+        to: "/3D/three1",
+        prependIcon: "mdi-video-3d-variant",
+        rounded: "xl",
+      },
+      {
+        title: 'three2',
+        to: "/3D/three2",
+        prependIcon: "mdi-video-3d-variant",
+        rounded: "xl",
+      },
+    ],
   },
-])
+]);
 </script>
 
 <style scoped></style>

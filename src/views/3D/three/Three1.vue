@@ -5,16 +5,24 @@
 </template>
 
 <script setup lang="ts">
-// 管道点位
-interface PipePoint {
+// 管道控制点位
+interface PipePoint<T = any> {
     name: string
     key: string
-    inKeys: string[]
-    outKeys: string[]
+    inKeys: string[] // 入水
+    outKeys: string[] // 出水
     state: 'open' | 'close'
-    
+    type?: 'control' | 'detactor' // 设备分 控制点位 检测点位（不影响水）
+    // position?: [number, number] // 设备 所在位置百分比
+    // inverse?: boolean // 水流方向变化 in out对换
+    data?: T
+}
+interface PipeLine {
+    name: string
+    devices: PipePoint[]
+    mesh: any[] // 材质控制
+    state: 'full' | 'empty' | ''
     inverse?: boolean // 水流方向变化 in out对换
-    data?: any
 }
 // 需要保证点位不互相自指 才可以不无限循环
 const pp: PipePoint[] = [
@@ -72,37 +80,39 @@ const pp: PipePoint[] = [
         key: '8',
         inKeys: ['5'],
         outKeys: ['3'],
-        state: 'open',
+        state: 'close',
     },
 ]
-setPipeStatus(pp, [pp[0]])
+// setPipeStatus(pp, [pp[0]]);
 /**
  * 
  * @param points 所有点位
  * @param entrys 输入点位
  */
 function setPipeStatus(points: PipePoint[], entrys: PipePoint[]) {
-    const visited: string[] = [];
+    const visited: WeakMap<PipePoint, boolean> = new WeakMap();
+    points.forEach(p => {
+        visited.set(p, false);
+    });
     for(let i = 0; i < entrys.length; i++) {
-        console.log(dfs(entrys[i], points))
+        console.log(dfs(entrys[i], points, visited))
     }
 }
-/**深度优先搜索 visited可能多次访问 ? */
 /**
  * @param current 
  * @param allPoints 
  * @param inverse 水流反转
  * @param fromKey 回溯链
  */
-function dfs(current: PipePoint, allPoints: PipePoint[], inverse?: boolean, fromKey?: string[]) {
+function dfs(current: PipePoint, allPoints: PipePoint[], visited: WeakMap<PipePoint, boolean>, inverse?: boolean) {
     if (current.state === 'close') return '';
-    const isLoaded = current.inKeys.some(el => fromKey?.some(key => key )) && current.outKeys.some(el => el == fromKey);
+    if (visited.get(current)) return current.name
+    visited.set(current, true);
     let res = current.name;
-    if (isLoaded) return res;
     for (let i = 0; i < current.outKeys.length; i++) {
         const next = allPoints.find(p => p.key === current.outKeys[i]);
         if (!next) continue;
-        res += '-' + dfs(next, allPoints, inverse, current.key);
+        res += '-' + dfs(next, allPoints, visited, inverse);
     }
     return res;
 }
