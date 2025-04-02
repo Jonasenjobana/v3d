@@ -11,6 +11,20 @@ const items: Reactive<IVListItem[]> = reactive([
     title: "3D",
     to: "/3D",
     prependIcon: "mdi-video-3d-variant",
+    children: [
+      {
+        title: "three1",
+        to: "/3D/three1",
+        // prependIcon: "mdi-video-3d-variant",
+        rounded: "xl",
+      },
+      {
+        title: "three2",
+        to: "/3D/three2",
+        // prependIcon: "mdi-video-3d-variant",
+        rounded: "xl",
+      },
+    ],
     // rounded: "xl"
   },
   {
@@ -37,6 +51,11 @@ const items: Reactive<IVListItem[]> = reactive([
       console.log(e, "wtf");
     },
   },
+  {
+    title: 'Component',
+    prependIcon: 'mdi-library',
+    to: '/component',
+  }
 ]);
 </script>
 
