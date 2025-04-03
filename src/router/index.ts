@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, onBeforeRouteLeave } from "vue-router";
 import AIChatingRoom from "@/views/AIChatingRoom.vue";
 import MapPlayground from "@/views/MapPlayground.vue";
 import CanvasPlayground from "@/views/CanvasPlayground.vue";
@@ -63,5 +63,15 @@ const router = createRouter({
     },
   ],
 });
-
+/**路由权限 守卫 */
+router.beforeEach((to, from, next) => {
+  next();
+})
+/**日志 数据埋点 */
+router.afterEach((to, from) => {
+  
+})
+/**组件内部 守卫 */
+// onBeforeRouteLeave(() => {});
+// onBeforeRouteUpdate(() => {});
 export default router;

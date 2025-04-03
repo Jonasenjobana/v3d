@@ -1,11 +1,13 @@
 <template>
-  <sl-layout :items></sl-layout>
+  <v-app :theme="'light'">
+    <SLLayout :items></SLLayout>
+  </v-app>
 </template>
 <script setup lang="ts">
-import SlLayout from "./views/layout/SLLayout.vue";
 import { reactive, type PropType, type Reactive } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import { components } from "vuetify/dist/vuetify-labs.js";
+import SLLayout from "./views/layout/SlLayout.vue";
 const items: Reactive<IVListItem[]> = reactive([
   {
     title: "3D",
@@ -52,10 +54,10 @@ const items: Reactive<IVListItem[]> = reactive([
     },
   },
   {
-    title: 'Component',
-    prependIcon: 'mdi-library',
-    to: '/component',
-  }
+    title: "Component",
+    prependIcon: "mdi-library",
+    to: "/component",
+  },
 ]);
 </script>
 

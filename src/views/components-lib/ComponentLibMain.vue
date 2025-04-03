@@ -1,20 +1,16 @@
 <template>
   <v-tabs v-model="tab" color="primary" dark slider-color="primary">
-    <v-tab 
-      v-for="(item, index) in tabs" 
-      :value="item.key" 
-      :to="item.to" 
-      :key="index"
-      @click="updateDirection(index)"
-    >
+    <v-tab v-for="(item, index) in tabs" :value="item.key" :to="item.to" :key="index" @click="updateDirection(index)">
       {{ item.title }}
     </v-tab>
   </v-tabs>
-  <div style="width: 100%; height: calc(100% - 48px)">
+  <div style="width: 100%; height: calc(100% - 48px); padding: 8px;">
     <router-view v-slot="{ Component }">
-      <transition :name="transitionName" mode="out-in">
-        <component :is="Component" />
-      </transition>
+      <v-slide-x-transition hide-on-leave leave-absolute>
+        <v-sheet :rounded="4" :elevation="6" style="color: #333;height: 100%;">
+          <component :is="Component" />
+        </v-sheet>
+      </v-slide-x-transition>
     </router-view>
   </div>
 </template>
@@ -24,14 +20,14 @@ import { ref, computed } from "vue";
 
 const tab = ref("form");
 const currentIndex = ref(0);
-const direction = ref<"left"|"right">("right");
+const direction = ref<"left" | "right">("right");
 
 const transitionName = computed(() => {
   return `slide-${direction.value}`;
 });
 
 function updateDirection(clickedIndex: number) {
-  direction.value = clickedIndex > currentIndex.value ? 'left' : 'right';
+  direction.value = clickedIndex > currentIndex.value ? "left" : "right";
   currentIndex.value = clickedIndex;
 }
 
