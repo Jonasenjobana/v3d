@@ -15,15 +15,19 @@
         </template>
       </v-select>
       <v-range-input v-model:max="mockForm.max" v-model:min="mockForm.min" @update:max="console.log($event, 'max')" @update:min="console.log($event, 'min')"></v-range-input>
-      <v-btn @click="submit()">提交</v-btn>
+      <v-btn @click="submit()" type="submit">提交</v-btn>
+      <v-btn @click="reset()" type="reset">重置</v-btn>
+      <v-btn @click="handleBoolean">bool</v-btn>
     </v-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, reactive, ref, watchEffect, type Directive, type Ref } from "vue";
+import { nextTick, reactive, ref, shallowRef, toRaw, watch, watchEffect, type Directive, type Ref } from "vue";
 import type { VForm } from "vuetify/components";
 import VRangeInput from "./custom/VRangeInput.vue";
+import { fr } from "vuetify/locale";
+import { useBoolean } from "./use";
 const formRef: Ref<VForm> = ref(null!);
 const mockForm = reactive({
   name: "",
@@ -61,7 +65,7 @@ const hobbyList = [
 ];
 const rules: any = [
   (value: string) => {
-    if (value.includes("wtf")) return true;
+    if (value?.includes("wtf")) return true;
     return "缺少what the fuck";
   },
 ];
@@ -71,8 +75,27 @@ watchEffect(() => {
 });
 function submit() {
   const form = formRef.value!;
+  form.checkValidity();
   console.log(form, mockForm, "=========", form.isValid);
 }
+function reset() {
+  const form = formRef.value!;
+  form.reset();
+}
+const { booleanRef, handleBoolean } = useBoolean();
+watch(
+  () => booleanRef.value,
+  () => {
+    console.log("dddddddddddddddddddddddddddddd");
+  }
+);
 </script>
 
-<style scoped></style>
+<style scoped>
+button {
+  background-color: #42b983;
+  height: 30px;
+  width: 140px;
+  margin-right: 4px;
+}
+</style>

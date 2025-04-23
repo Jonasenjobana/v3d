@@ -2,11 +2,17 @@ import { createRouter, createWebHistory, onBeforeRouteLeave } from "vue-router";
 import AIChatingRoom from "@/views/AIChatingRoom.vue";
 import MapPlayground from "@/views/MapPlayground.vue";
 import CanvasPlayground from "@/views/CanvasPlayground.vue";
+import TensorPicture from "@/views/AI/tensorflow/TensorPicture.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   linkActiveClass: "wtf",
   routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import("@/views/System/Login.vue")
+    },
     {
       path: "/3D",
       name: "3D",
@@ -27,7 +33,7 @@ const router = createRouter({
     {
       path: "/ai",
       name: "ai",
-      component: AIChatingRoom,
+      component: TensorPicture,
     },
     {
       path: "/canvas",

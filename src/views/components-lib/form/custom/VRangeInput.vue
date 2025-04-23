@@ -14,22 +14,21 @@ const props = defineProps({
   config: {
     type: Object as PropType<{ min: number; max: number; step: number }>,
     default: () => ({
-      min: -Infinity,
-      max: Infinity,
+      min: Number.MIN_SAFE_INTEGER,
+      max: Number.MAX_SAFE_INTEGER,
       step: NaN,
     }),
   },
 });
 function validChange($event: any, type: string) {
-  
 }
 const minRangeRules = [
   (v: number) => v >= props.config.min || '小于设置最小值',
-  (v: number) => v <= maxValue.value || '最小值不能大于最大值',
+  (v: number) => v < maxValue.value || '最小值不能大于最大值',
 ]
 const maxRangeRules = [
-  (v: number) => v >= props.config.max || '超过设置最大值',
-  (v: any) => v >= minValue || '最大值不能小于最小值'
+  (v: number) => v <= props.config.max || '超过设置最大值',
+  (v: number) => v > minValue.value || '最大值不能小于最小值'
 ]
 </script>
 
