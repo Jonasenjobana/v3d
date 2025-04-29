@@ -13,19 +13,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://192.168.1.20:9527',
-        secure: true,
-        // rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-      '/upload': {
-        target: 'http://192.168.1.20:9527',
-        secure: true
-      },
-      "/websocket": {
-        target: "http://192.168.1.20:9527",
+        target: 'http://127.0.0.1:8081',
         secure: false,
-        ws: true
-      }
+      },
     }
   },
   resolve: {
