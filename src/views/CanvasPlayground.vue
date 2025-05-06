@@ -24,6 +24,9 @@ function draw() {
 </script>
 
 <style scoped>
+.position-relative {
+    margin: 400px 400px;
+}
 #canvas-playground {
     height: 100%;
     width: 100%;

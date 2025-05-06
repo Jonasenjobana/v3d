@@ -1,12 +1,14 @@
 <template>
-  <div class="sl-range-progress" ref="rangeRef" @wheel="onMouseWheel($event)">
-    <div class="range-progress" ref="rangeProgressRef">
-      <div class="range-chunk" ref="rangeChunkRef" :style="rangeChunkStyle"></div>
+  <div class="sl-range-progress" @wheel="onMouseWheel($event)">
+    <div class="wraper" ref="rangeRef">
+      <div class="range-progress" ref="rangeProgressRef">
+        <div class="range-chunk" ref="rangeChunkRef" :style="rangeChunkStyle"></div>
+      </div>
+      <div class="chunk" ref="chunkRef"></div>
+      <div class="chunk" ref="chunkRef2"></div>
+      <div class="range-content"></div>
+      <canvas ref="canvasRef"></canvas>
     </div>
-    <div class="chunk" ref="chunkRef"></div>
-    <div class="chunk" ref="chunkRef2"></div>
-    <div class="range-content"></div>
-    <canvas ref="canvasRef"></canvas>
   </div>
 </template>
 
@@ -97,7 +99,7 @@ function onMouseWheel($event: WheelEvent) {
 }
 watch(rangeTransform, (range) => {
   if (widthReactive.wrapWidth != 0 && rangeChunkRef.value) {
-    const progress = range.x / widthReactive.wrapWidth; // 当前开始百分比
+    const progress =  Number((range.x / widthReactive.wrapWidth).toFixed(3)); // 当前开始百分比
     const { min, max } = config.value;
     const diff = Math.abs(currentRanges.value[0] - currentRanges.value[1]);
     currentRanges.value[0] = (max - min) * progress;
@@ -117,7 +119,7 @@ watch(
     chunk1Transform.x = getProgressByValue(start) * widthReactive.wrapWidth;
     chunk2Transform.x = getProgressByValue(end) * widthReactive.wrapWidth;
     rangeTransform.x = getProgressByValue(start) * widthReactive.wrapWidth;
-    console.log(ranges,'==========')
+    console.log(ranges)
   },
   { deep: true }
 );
@@ -134,23 +136,29 @@ onMounted(() => {
 });
 function getProgressByValue(value: number) {
   const { min, max } = config.value;
-  return (value - min) / (max - min);
+  return Number(((value - min) / (max - min)).toFixed(3));
 }
 function getValueByProgress(progress: number) {
   const { min, max } = config.value;
-  return min + (max - min) * progress;
+  return min + (max - min) * Number(progress.toFixed(3));
 }
 </script>
 
 <style scoped lang="less">
 .sl-range-progress {
-  --pt: 8px;
-  --height: 38px;
-  position: relative;
+  padding: 0 6px;
   width: 100%;
-  background-color: aliceblue;
-  height: var(--height);
-  padding-top: var(--pt);
+
+  .wraper {
+    --pt: 8px;
+    --height: 38px;
+    background-color: aliceblue;
+    height: var(--height);
+    padding-top: var(--pt);
+    position: relative;
+    width: 100%;
+  }
+
   .range-progress {
     position: absolute;
     top: 0;
@@ -158,23 +166,46 @@ function getValueByProgress(progress: number) {
     height: var(--pt);
     width: 100%;
     background-color: azure;
+
     .range-chunk {
       height: 100%;
       background-color: aqua;
       cursor: w-resize;
     }
   }
+
   .chunk {
     position: absolute;
     cursor: pointer;
-    height: calc(var(--height) - var(--pt));
+    height: 100%;
     width: 6px;
-    top: var(--pt);
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.3);
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 1px;
+      left: calc(50% - 2px);
+      transform: translateX(-50%);
+      height: calc(100% - var(--pt));
+      background-color: rgba(0, 0, 0);
+    }
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      height: calc(var(--height) - var(--pt));
+      width: 6px;
+      top: var(--pt);
+      left: calc(50% - 2px);
+      height: 40%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0);
+    }
   }
-  .range-content {
-  }
+
+  .range-content {}
+
   canvas {
     height: 100%;
     width: 100%;
