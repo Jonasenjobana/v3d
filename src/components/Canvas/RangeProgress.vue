@@ -2,14 +2,15 @@
   <div class="sl-range-progress">
     <div class="wraper" ref="rangeRef">
       <div class="range-progress" ref="rangeProgressRef">
-        <div class="range-chunk" ref="rangeChunkRef" :style="{ width: rangeData.progress * 100 + '%' }"></div>
+        <div class="range-chunk" @mouseleave="chunkHover(null, false)"  @mouseenter="chunkHover(rangeProgressRef, true)" ref="rangeChunkRef" :style="{ width: rangeData.progress * 100 + '%' }"></div>
       </div>
-      <div class="chunk" ref="chunkRef"></div>
-      <div class="chunk" ref="chunkRef2"></div>
+      <div class="chunk" @mouseleave="chunkHover(null, false)"  @mouseenter="chunkHover(chunkRef, true)" ref="chunkRef"></div>
+      <div class="chunk" @mouseleave="chunkHover(null, false)" @mouseenter="chunkHover(chunkRef2, true)" ref="chunkRef2"></div>
       <div class="range-content" @wheel="onMouseWheel($event)"></div>
       <canvas ref="canvasRef"></canvas>
     </div>
-    <div class="tooltip" v-show="activeTooltip.active" :style="{ left: activeTooltip.left + 'px' }" ref="tooltipRef">{{ activeTooltip.info }}</div>
+    <v-tooltip :top="true" :activator="activeTooltip.activeRef" v-model="activeTooltip.isActive" :text="activeTooltip.info" :active="true"></v-tooltip>
+    <!-- <div class="tooltip" v-show="activeTooltip.active" :style="{ left: activeTooltip.left + 'px' }" ref="tooltipRef">{{ activeTooltip.info }}</div> -->
   </div>
 </template>
 
@@ -100,15 +101,43 @@ const rangeFormate = computed(() => {
   console.log(start, end);
   return [moment(start).format("YYYY-MM-DD HH:mm:ss"), moment(end).format("YYYY-MM-DD HH:mm:ss")];
 });
-const activeTooltip = computed(() => {
-  const activeChunk = chunkDrag.activeRef.value ? chunkDrag : chunkDrag2.activeRef.value ? chunkDrag2 : rangDrag.activeRef.value ? rangDrag : null;
-  const info = rangDrag.activeRef.value ? `${rangeFormate.value[0]}~${rangeFormate.value[1]}` : chunkDrag.activeRef.value ? chunkDrag.dragTransfrom.x > chunkDrag2.dragTransfrom.x ? rangeFormate.value[1] : rangeFormate.value[0] : chunkDrag2.dragTransfrom.x > rangDrag.dragTransfrom.x ? rangeFormate.value[1] : rangeFormate.value[0];
-  return {
-      active: !!activeChunk,
-      left: activeChunk?.dragTransfrom.x || '0',
-      info
-    }
+function chunkHover(ref: any, isActive: boolean) {
+  activeTooltip.activeRef = ref;
+  activeTooltip.isActive = isActive;
+}
+const activeTooltip = reactive<any>({
+  activeRef: null,
+  isActive: false,
+  info: '',
+  top: false,
+  left: false,
+  right: false
 })
+watchEffect(() => {
+  let currentActiveRef = null;
+  let activeDrag = null;
+  let info: any = '';
+  if (chunkDrag.activeRef.value) {
+      currentActiveRef = chunkRef;
+      activeDrag = chunkDrag;
+      info = chunkDrag.dragTransfrom.x > chunkDrag2.dragTransfrom.x ? rangeFormate.value[1] : rangeFormate.value[0];
+  }
+  if (chunkDrag2.activeRef.value) {
+    currentActiveRef = chunkRef2
+    activeDrag = chunkDrag2;
+    info = chunkDrag.dragTransfrom.x > chunkDrag2.dragTransfrom.x ? rangeFormate.value[0] : rangeFormate.value[1];
+  }
+  if (rangDrag.activeRef.value) {
+    currentActiveRef = rangeChunkRef
+    activeDrag = rangDrag
+    info = `${rangeFormate.value[0]} - ${rangeFormate.value[1]}`
+  }
+  Object.assign(activeTooltip, {
+    activeRef: currentActiveRef,
+    isActive: !!currentActiveRef,
+    info
+  })
+}, {flush: 'post'})
 function onMouseWheel($event: WheelEvent) {
   const { deltaY } = $event;
   const zoomFactor = deltaY > 0 ? -mergeConfig.value.zoomDiff : mergeConfig.value.zoomDiff;
