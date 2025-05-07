@@ -19,7 +19,7 @@
  * 原理：缩放后平移到鼠标位置
  */
 import moment from "moment";
-import { computed, nextTick, onMounted, reactive, ref, toRef, watch, watchEffect, type Prop, type PropType, type Ref } from "vue";
+import { computed, h, inject, nextTick, onMounted, reactive, ref, toRef, watch, watchEffect, type Prop, type PropType, type Ref } from "vue";
 import { useDrag, type DragConfig } from "./useDrag";
 import { useResizeObserver } from "@/utils/element/event";
 const props = defineProps({

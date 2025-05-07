@@ -4,7 +4,7 @@
   </v-app>
 </template>
 <script setup lang="ts">
-import { reactive, type PropType, type Reactive } from "vue";
+import { onMounted, provide, reactive, ref, type PropType, type Reactive } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import { components } from "vuetify/dist/vuetify-labs.js";
 import SLLayout from "./views/layout/SlLayout.vue";
