@@ -1,8 +1,6 @@
 <template>
     <div class="position-relative">
-        <!-- <v-btn @click="draw()" class="position-absolute top-0 right-0">DRAW</v-btn> -->
-        <range-progress :init-range="[0, 100]" :config="{start: 30, end: 79}"></range-progress>
-        <!-- <canvas id="canvas-playground" ref="canvasRef"></canvas> -->
+        <range-progress :ranges="initRanges" :range-type="'time'" :init-ranges="rangeset" @range-update="onRangeUpdate($event)"></range-progress>
     </div>
 </template>
 
@@ -11,6 +9,8 @@ import { useCanvasEl } from '@/utils/element/canvas';
 import { onMounted, ref, shallowRef, type Ref } from 'vue';
 import RangeProgress from '@/components/Canvas/RangeProgress.vue';
 const canvasRef: Ref<HTMLCanvasElement|null> = ref(null);
+const rangeset = ref(['2024-12-12 12:00:02', '2024-12-12 12:20:02'])
+const initRanges = ref(['2024-12-12 12:00:02', '2024-12-12 13:00:02'])
 // const canvas = useCanvasEl(canvasRef);
 function draw() {
     // if (!canvas.ctx) return;
@@ -20,6 +20,14 @@ function draw() {
     // ctx.globalCompositeOperation = 'destination-over';
     // ctx.fillStyle = 'rgba(198, 234, 231, .5)';
     // ctx.fillRect(50, 50, 100, 100);
+}
+let a: any
+function onRangeUpdate($event: any) {
+    console.log($event, 'update')
+    // a && clearTimeout(a)
+    // a = setTimeout(() => {
+    //     // rangeset.value = [Math.random() * 10, Math.random() * 40+10],
+    // }, 10000)
 }
 </script>
 

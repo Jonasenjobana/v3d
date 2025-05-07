@@ -1,6 +1,9 @@
 interface RangeProgressConfig {
     zoomDiff: number;
     zoomEnable: boolean
-    start: any,
-    end: any,
+    rangeType: 'time' | 'number',
+    start: number
+    end: number
+    initStart: number
+    initEnd: number
 }

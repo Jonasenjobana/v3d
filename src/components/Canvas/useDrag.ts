@@ -5,6 +5,7 @@ import {
   reactive,
   ref,
   watch,
+  type MaybeRef,
   type Reactive,
   type Ref,
 } from "vue";
@@ -18,6 +19,14 @@ const defaultConfig = {
   isMobile: false,
   boundPadding: [0, 0],
 };
+export interface DragConfig {
+  boundEl?: MaybeRef<HTMLElement|undefined>;
+  boundCheck: boolean; // 边缘碰撞检测
+  position: [number, number]; // 初始位置
+  enableX: boolean; // x轴拖动
+  enableY: boolean; // y轴拖动
+  isMobile: boolean; // 是否移动端
+}
 /**
  *
  * @param targetRef 拖动目标
