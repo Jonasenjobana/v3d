@@ -41,6 +41,11 @@ const router = createRouter({
       component: TensorPicture,
     },
     {
+      path: "/chating",
+      name: "chating",
+      component: AIChatingRoom,
+    },
+    {
       path: "/canvas",
       name: "canvas",
       component: CanvasPlayground,
@@ -72,6 +77,11 @@ const router = createRouter({
         }
       ],
     },
+    {
+      path: "/mobile",
+      name: "mobile",
+      component: () => import("@/views/mobile/MobilePlayground.vue"),
+    }
   ],
 });
 /**路由权限 守卫 */

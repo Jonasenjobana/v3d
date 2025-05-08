@@ -34,7 +34,7 @@ function onRangeUpdate($event: any) {
 
 <style scoped>
 .position-relative {
-    margin: 400px 400px;
+    margin: 20% 20%;
 }
 #canvas-playground {
     height: 100%;

@@ -30,6 +30,11 @@ const items: Reactive<IVListItem[]> = reactive([
     // rounded: "xl"
   },
   {
+    title: "Mobile",
+    to: "/mobile",
+    prependIcon: "mdi-cellphone",
+  },
+  {
     title: "Map",
     prependIcon: "mdi-map",
     to: "/map",

@@ -1,0 +1,66 @@
+# Grid快速指南
+## 基本内容
+- 容器 定义display: grid的元素
+    - justify-content
+        - start 左对齐
+        - end 右对齐
+        - center 居中对齐
+        - stretch 拉伸
+        - space-around 每个项目两侧的间隔相等。所以，项目之间的间隔比项目与边框的间隔大一倍。
+        - space-between 项目与项目的间隔相等，项目与边框之间没有间隔。
+        - space-evenly 项目与项目的间隔相等，项目与边框之间也是同样长度的间隔。
+    - align-content
+- 行 row 列 col
+    - grid-template-rows: (多少行 定义多少) grid-template-columns: (多少列 定义多少)
+    - 单位可以百分比；像素；可以repeat去占位
+        - repeat属性
+            - repeat(3, 100px) = 100px 100px 100px; 或者重复某种模式 repeat(3, 1fr 2fr) = 1fr 2fr 1fr 2fr 1fr 2fr
+            - auto-fill 自动填充 容器大小位置 单元格大小已知 由浏览器自动帮你 划分
+            - auto-fit 自动填充 容器大小位置 单元格大小未知 由浏览器自动帮你 划分
+            - fr 单位 比例
+            - minmax() 最小最大 分配空间处于两者之间
+            - min-content 最小
+            - max-content 最大
+    - 别名
+        - grid-template-areas: "a b c" "d e f" "g h i" 定义区域
+            - 如果有些地方不用到可以用.代替
+            - 可以给单元格起别名 然后用grid-area去引用
+            - 别名可以重复使用 但是要注意 别名的顺序 要和单元格的顺序一致
+        - grid-template-rows: [row1-start] 100px [row1-end row2-start] 100px [row2-end row3-start] 100px [row3-end];
+            - 中括号代表别名 允许由多个别名
+    - grid-auto-columns grid-auto-rows
+        - 自动填充的单元格的大小 可以设置
+        - 如果设置了行列固定数量 当内部元素超过了设置 则按照auto创建
+- 单元格 cell
+    - grid-auto-flow
+        - 如果子项item没设置area 则按照节点顺序默认先行后列填充 可以设置成grid-auto-flow: column 先列后行
+        - row dense 先行后列 有空隙则填充
+        - column dense 先列后行 有空隙则填充
+    - justify-items
+        - 设置单元格内部排序 与display: flex类似
+        - start 左对齐 单元格内部左对齐
+        - end 右对齐 单元格内部右对齐
+        - center 居中对齐 单元格内部居中
+        - stretch 拉伸 占满单元格
+    - align-items
+        - 设置单元格内部排序 与display: flex类似
+    - place-items:  <align-items> <justify-items>; 合并写法
+- 网格线 grid line
+    - grid-gap: <grid-row-gap> <grid-column-gap>;
+    - grid-row-gap: 行间距
+    - grid-column-gap: 列间距
+
+## 指定位置
+- 可以根据area指定 也可以根据网格线位置指定 也可以根据定义网格线名字 指定位置 同时按照css书写顺序优先级
+- 根据网格线位置指定
+    - grid-column-start: n 从左侧第n条网格线开始   | 或者名字
+    - grid-column-end: n  从左侧第n条网格线结束   | 或者名字
+    - grid-row-start: n  从顶部第n条网格线开始   | 或者名字
+    - grid-row-end: n  从顶部第n条网格线结束   | 或者名字
+- 根据网格线名称指定
+    - grid-column: 网格线名称 / 网格线名称; 合并写法 =  grid-column-start +  grid-column-end
+    - grid-row: 网格线名称 / 网格线名称; 合并写法 =  grid-row-start +  grid-row-end
+    - grid-column: 1 / 3; 从第1条网格线开始 到第3条网格线结束 不包含第3条网格线
+    - grid-area: 网格线名称 / 网格线名称; 合并写法
+    - grid-area: 1 / 1 / 3 / 3; 从第1条网格线开始 到第3条网格线结束 不包含第3条网格线 grid-area: <row-start> / <column-start> / <row-end> / <column-end>;
+    - grid-area: a; 引用别名
