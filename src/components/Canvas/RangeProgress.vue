@@ -2,15 +2,14 @@
   <div class="sl-range-progress">
     <div class="wraper" ref="rangeRef">
       <div class="range-progress" ref="rangeProgressRef">
-        <div class="range-chunk" @mouseleave="chunkHover(null, false)"  @mouseenter="chunkHover(rangeProgressRef, true)" ref="rangeChunkRef" :style="{ width: rangeData.progress * 100 + '%' }"></div>
+        <div class="range-chunk"ref="rangeChunkRef" :style="{ width: rangeData.progress * 100 + '%' }"></div>
       </div>
-      <div class="chunk" @mouseleave="chunkHover(null, false)"  @mouseenter="chunkHover(chunkRef, true)" ref="chunkRef"></div>
-      <div class="chunk" @mouseleave="chunkHover(null, false)" @mouseenter="chunkHover(chunkRef2, true)" ref="chunkRef2"></div>
+      <div class="chunk" ref="chunkRef"></div>
+      <div class="chunk" ref="chunkRef2"></div>
       <div class="range-content" @wheel="onMouseWheel($event)"></div>
       <canvas ref="canvasRef"></canvas>
     </div>
-    <v-tooltip :top="true" :activator="activeTooltip.activeRef" v-model="activeTooltip.isActive" :text="activeTooltip.info" :active="true"></v-tooltip>
-    <!-- <div class="tooltip" v-show="activeTooltip.active" :style="{ left: activeTooltip.left + 'px' }" ref="tooltipRef">{{ activeTooltip.info }}</div> -->
+    <div class="tooltip" v-show="activeTooltip.isActive" :style="{ ...activeTooltip.styleObject }" ref="tooltipRef">{{ activeTooltip.info }}</div>
   </div>
 </template>
 
@@ -40,6 +39,8 @@ const props = defineProps({
   config: Object as PropType<Partial<RangeProgressConfig>>,
 });
 const emits = defineEmits(["rangeUpdate"]);
+// 全显示模式
+const detailFlag = ref(true)
 /**
  * dom实例
  */
@@ -49,7 +50,6 @@ const chunkRef = ref<HTMLDivElement>();
 const chunkRef2 = ref<HTMLDivElement>();
 const rangeRef = ref<HTMLDivElement>();
 const canvasRef = ref<HTMLCanvasElement>();
-const tooltipRef = ref<HTMLDivElement>();
 /**
  * 数据状态管理
  */
@@ -85,7 +85,6 @@ const mergeConfig: Ref<RangeProgressConfig> = computed(() => {
     initStart: 0,
     initEnd: 0,
   };
-  console.log(toNumber(start), toNumber(end));
   return {
     ...defaultConfig,
     ...props.config,
@@ -105,37 +104,40 @@ function chunkHover(ref: any, isActive: boolean) {
   activeTooltip.activeRef = ref;
   activeTooltip.isActive = isActive;
 }
-const activeTooltip = reactive<any>({
+const activeTooltip = reactive({
   activeRef: null,
   isActive: false,
   info: '',
-  top: false,
-  left: false,
-  right: false
+  styleObject: {}
 })
 watchEffect(() => {
   let currentActiveRef = null;
   let activeDrag = null;
   let info: any = '';
+  let styleObject = {};
   if (chunkDrag.activeRef.value) {
       currentActiveRef = chunkRef;
       activeDrag = chunkDrag;
       info = chunkDrag.dragTransfrom.x > chunkDrag2.dragTransfrom.x ? rangeFormate.value[1] : rangeFormate.value[0];
+      styleObject = { left: `calc(${chunkDrag2.dragTransfrom.x} - 100%)`}
   }
   if (chunkDrag2.activeRef.value) {
     currentActiveRef = chunkRef2
     activeDrag = chunkDrag2;
     info = chunkDrag.dragTransfrom.x > chunkDrag2.dragTransfrom.x ? rangeFormate.value[0] : rangeFormate.value[1];
+    styleObject = { left: `calc(${chunkDrag2.dragTransfrom.x} + 100%)`}
   }
   if (rangDrag.activeRef.value) {
     currentActiveRef = rangeChunkRef
     activeDrag = rangDrag
     info = `${rangeFormate.value[0]} - ${rangeFormate.value[1]}`
+    styleObject = { left: `calc(${chunkDrag2.dragTransfrom.x} + 100%)`}
   }
   Object.assign(activeTooltip, {
     activeRef: currentActiveRef,
     isActive: !!currentActiveRef,
-    info
+    info,
+    styleObject
   })
 }, {flush: 'post'})
 function onMouseWheel($event: WheelEvent) {

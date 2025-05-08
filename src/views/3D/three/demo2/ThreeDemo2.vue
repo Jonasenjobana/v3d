@@ -4,7 +4,8 @@
 import { inject, nextTick, onMounted, onUnmounted, watch } from "vue";
 import { SLTHREE } from "../utils/SlThree";
 import * as THREE from "three";
-const slThreeInstance = inject(SLTHREE);
+import { useSlThree } from "@/stores/useThree";
+const {slThreeData} = useSlThree()
 const group = new THREE.Group();
 const box = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({ color: 0x00ffff });
@@ -13,12 +14,12 @@ cube.position.set(1,3,4)
 group.add(cube);
 onMounted(() => {
   nextTick(() => {
-    slThreeInstance!.tScene!.add(group);
-    (slThreeInstance!.tCamera as THREE.PerspectiveCamera)!.lookAt(cube.position);
+    slThreeData!.scene!.add(group);
+    (slThreeData!.camera as THREE.PerspectiveCamera)!.lookAt(cube.position);
   });
 });
 onUnmounted(() => {
-  slThreeInstance!.tScene!.remove(group);
+  slThreeData!.scene!.remove(group);
 });
 </script>
 

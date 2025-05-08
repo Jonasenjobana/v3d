@@ -26,6 +26,8 @@
 7. 相同坐标系下，坐标向量相减 意味着两坐标向量的方向，归一化就是方向向量了 终点坐标指向起始坐标
 8. 叉乘求两向量构成平面法向量（根据右手定则的方向）
 10. webgl实现带有宽度的线条 本质使用的是三角形Mesh
+11. `gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);` 这样就告诉WebGL裁剪空间的 -1 -> +1 分别对应到x轴的 0 -> gl.canvas.width 和y轴的 0 -> gl.canvas.height
+12. WebGL 的 gl.ARRAY_BUFFER 是单例状态（同一时间只能绑定一个缓冲区），因此设置不同属性时需手动切换绑定。例如，设置颜色属性前需绑定 colorBuffer，设置位置属性前需绑定 positionBuffer。
 ## 基本流程
 1. 创建顶点着色器
     ```javascript
@@ -63,7 +65,7 @@
         gl.attachShader(program, shaderFragment);
         gl.linkProgram(program);
     ```
-4. 传attribute属性（顶点不同值不同）
+4. 传attribute属性（顶点不同值不同）渲染前需要确定
    - 传顶点 
         ```javascript
             const buffer = gl.createBuffer();
@@ -75,7 +77,7 @@
         ```
     - buffer类型可以是float32Array 也可以是 Uint8Array 对于颜色而言就是Uint8Array，vertexAttribPoint 需要gl.UNSIGNED_BYTE
     - 如果出现找不到location，可能是着色器代码中没有使用到变量，或者仅声明未使用或未声明未使用
-5. 传uniform属性（顶点都共用）
+5. 传uniform属性（顶点和片元都共用值）
     ```javascript
         const uLocation = gl.getUniformLocation(p, 'uModelViewMatrix');
         gl.uniformMatrix4fv(uLocation, false, new Float32Array([...变化矩阵]));
@@ -167,6 +169,32 @@
             1. 已知旋转向量(x,y,z)归一化
             2. 旋转角度...
 - 线性相关与线性无关
+    - 线性相关 意味着有一组向量能够表示其他任意向量
+- 矩阵的秩
+    - 行秩和列秩 秩 意味着线性无关的最大个数
+- 齐次方程和非齐次方程
+    - 齐次方程 Ax = 0, 一定有平凡解 x = 0, 非齐次方程 Ax = b
+    - 齐次方程一定有解，当秩不是满秩 则有无穷解
+        - rank(A) = n 唯一解 x = 0
+        - rank(A) < n 无穷多解
+    - 非齐次方程 判断增广矩阵 即[A|b]
+        - rank(A) = rank([A|b]) = n 有唯一解
+        - rank(A) = rank([A|b]) = r < n 有无穷多解
+        - rank(A) < rank([A|b]) 无解
+- 奇异矩阵和非奇异矩阵 （不可逆矩阵和可逆矩阵）
+    - 可逆矩阵特点
+        1. 满秩
+        2. 行列向量均线性无关
+        3. 齐次方程仅有x = 0通解，对于非齐次方程Ax = b 则有唯一解
+        4. 行列式不为0
+    - 可逆充要条件
+        - 行列式不为0
+        - 满秩
+        - 可由初等矩阵乘积转化来
+- 特征值：对于方阵A 存在非零向量V和标量c 使AV = cV 则c是矩阵A特征值
+- 迹
+
+    
 ## 着色器编程
 ### 套路
 1. 颜色取反 1.0 - color

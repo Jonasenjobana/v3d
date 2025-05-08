@@ -10,8 +10,8 @@ import { onMounted, ref, shallowRef, type Ref } from 'vue';
 import RangeProgress from '@/components/Canvas/RangeProgress.vue';
 import { useTooltip } from '@/components/Teleport/useTooltip';
 const canvasRef: Ref<HTMLCanvasElement|null> = ref(null);
-const rangeset = ref(['2024-12-12 12:00:02', '2024-12-12 12:20:02'])
-const initRanges = ref(['2024-12-12 12:00:02', '2024-12-12 13:00:02'])
+const rangeset = ref(['2024-12-12 13:00:00', '2024-12-12 13:00:02'])
+const initRanges = ref(['2024-12-12 13:00:00', '2024-12-12 13:00:02'])
 // const canvas = useCanvasEl(canvasRef);
 function draw() {
     // if (!canvas.ctx) return;

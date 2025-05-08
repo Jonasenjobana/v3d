@@ -11,6 +11,12 @@ export interface SLThreeInstance {
   tCompose: EffectComposer | null;
   renderState: boolean;
 }
+/**
+ * 注入three 相关实例
+ * @param canvasRef 
+ * @param option 
+ * @returns 
+ */
 export function useSLThree(canvasRef: Ref<HTMLCanvasElement>, option: any) {
   const defaultConfig = {
     frameRate: 60,
@@ -60,7 +66,6 @@ export function useSLThree(canvasRef: Ref<HTMLCanvasElement>, option: any) {
   }
   function animate() {
     animeControl.start(() => {
-      console.log("ok");
       renderFrame();
     });
   }

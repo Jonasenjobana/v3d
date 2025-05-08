@@ -13,11 +13,20 @@
 import { onMounted, ref } from "vue";
 import { useSLThree } from "../utils/SlThree";
 import * as THREE from "three";
+import { onBeforeRouteUpdate, useRouter } from "vue-router";
+import { useSlThree } from "@/stores/useThree";
 const threeCanvas = ref<HTMLCanvasElement>({} as HTMLCanvasElement);
 const { slThreeInstance } = useSLThree(threeCanvas, {});
+const {initThree, slThreeData} = useSlThree();
 onMounted(() => {
-  (slThreeInstance!.tCamera as THREE.PerspectiveCamera)!.position.set(0, 0, 5);
+  initThree(threeCanvas, {}).then(() => {
+    (slThreeData!.camera as THREE.PerspectiveCamera)!.position.set(0, 0, 5);
+  })
 });
+onBeforeRouteUpdate((to, from) => {
+  
+})
+
 </script>
 
 <style scoped lang="less">

@@ -27,8 +27,13 @@ const router = createRouter({
           path: "three2",
           name: "three2",
           component: () => import("@/views/3D/three/demo2/ThreeDemo2.vue"),
-        },
+        }
       ],
+    },
+    {
+      path: "/webgl",
+      name: "webgl",
+      component: () => import("@/views/3D/webgl/gl1.vue"),
     },
     {
       path: "/ai",
