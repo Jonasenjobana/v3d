@@ -1,40 +1,48 @@
 <template>
-    <div class="position-relative">
-        <range-progress :ranges="initRanges" :range-type="'time'" :init-ranges="rangeset" @range-update="onRangeUpdate($event)"></range-progress>
+    <div class="position-relative" ref="canvasPlayground">
     </div>
 </template>
 
 <script setup lang="ts">
-import { useCanvasEl } from '@/utils/element/canvas';
-import { onMounted, ref, shallowRef, type Ref } from 'vue';
-import RangeProgress from '@/components/Canvas/RangeProgress.vue';
-import { useTooltip } from '@/components/Teleport/useTooltip';
-const canvasRef: Ref<HTMLCanvasElement|null> = ref(null);
-const rangeset = ref(['2024-12-12 13:00:00', '2024-12-12 13:00:02'])
-const initRanges = ref(['2024-12-12 13:00:00', '2024-12-12 13:00:02'])
-// const canvas = useCanvasEl(canvasRef);
-function draw() {
-    // if (!canvas.ctx) return;
-    // const ctx = canvas.ctx;
-    // ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
-    // ctx.fillRect(0, 0, 100, 100);
-    // ctx.globalCompositeOperation = 'destination-over';
-    // ctx.fillStyle = 'rgba(198, 234, 231, .5)';
-    // ctx.fillRect(50, 50, 100, 100);
-}
-useTooltip({}, 'test');
-function onRangeUpdate($event: any) {
-    console.log($event, 'update')
-    // a && clearTimeout(a)
-    // a = setTimeout(() => {
-    //     // rangeset.value = [Math.random() * 10, Math.random() * 40+10],
-    // }, 10000)
-}
+import { onMounted, ref } from 'vue';
+const canvasPlayground = ref<HTMLDivElement>(null!);
+import { SlCanvasArc, SlCanvasLayer, SlCanvasStage } from "zqdemo";
+onMounted(() => {
+    const stage = new SlCanvasStage(canvasPlayground.value); 
+    const layer = new SlCanvasLayer().addTo(stage);
+    const arc = new SlCanvasArc({
+        radius: 100,
+        startAngle: 0,
+        endAngle: Math.PI * 2,
+        x: 500,
+        y: 500,
+        lineWidth: 10,
+        strokeStyle: 'red',
+        fillStyle: 'green'
+    }).addTo(layer).animeTicket((T) => {
+        arc.x = (arc.x || 0) + 1;
+        arc.y = (arc.y || 0) + 1;
+    });
+    const arc2 = new SlCanvasArc({
+        radius: 100,
+        startAngle: 0,
+        endAngle: Math.PI * 2,
+        x: 800,
+        y: 677,
+        lineWidth: 10,
+        strokeStyle: 'green',
+        fillStyle: 'red'
+    }).addTo(layer).animeTicket((T) => {
+        arc2.x = (arc2.x || 0) + 1;
+        arc2.y = (arc2.y || 0) + 1;
+    });
+})
 </script>
 
 <style scoped>
 .position-relative {
-    margin: 400px 400px;
+    width: 100%;
+    height: 100%;
 }
 #canvas-playground {
     height: 100%;

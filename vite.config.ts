@@ -10,6 +10,14 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
+  build: {
+    target: 'esnext',
+    lib: {
+      entry: './src/components/index.ts',
+      formats: ['es', 'cjs', 'iife'],
+      name: 'CustomElement'
+    }
+  },
   server: {
     proxy: {
       '/api': {

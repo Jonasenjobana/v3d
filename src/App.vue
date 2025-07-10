@@ -6,7 +6,6 @@
 <script setup lang="ts">
 import { onMounted, provide, reactive, ref, type PropType, type Reactive } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
-import { components } from "vuetify/dist/vuetify-labs.js";
 import SLLayout from "./views/layout/SlLayout.vue";
 const items: Reactive<IVListItem[]> = reactive([
   {
@@ -41,6 +40,14 @@ const items: Reactive<IVListItem[]> = reactive([
     title: "AI",
     prependIcon: "mdi-robot-happy-outline",
     to: "/ai",
+    onClick: (e: any) => {
+      console.log(e, "wtf");
+    },
+  },
+  {
+    title: "Canvas",
+    prependIcon: "mdi-artboard",
+    to: "/echart",
     onClick: (e: any) => {
       console.log(e, "wtf");
     },

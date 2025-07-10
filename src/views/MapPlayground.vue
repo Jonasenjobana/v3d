@@ -1,74 +1,92 @@
 <template>
   <div class="map-playground">
-    <div id="map" ref="mapRef"></div>
-    <dynamic-router-layer ref="dynamicRouterLayer"></dynamic-router-layer>
+    <div id="map" ref="mapElRef"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { DynamicComponentManager } from "@/components/DynamicComponent/Dynamic";
-import DynamicRouterLayer from "@/components/DynamicComponent/DynamicRouterLayer.vue";
-import AIChat from "@/components/AI/AIChat.vue";
-import { slMap } from "@/module/map/compisition/sl-map";
-import { markRaw, onMounted, provide, reactive, ref, shallowRef, unref, watch, type DefineComponent, type InjectionKey, type Ref, type ShallowReactive } from "vue";
-import AIMarkdown from "@/components/AI/AIMarkdown.vue";
-import type { DynamicComponent } from "@/components/DynamicComponent/model";
-import MapTable from "./map/MapTable.vue";
-import MapPopup from "./map/MapPopup.vue";
-import MapLayer from "./map/MapLayer.vue";
-import { DynamicManageKey, useDynamic, type DynamicRef } from "@/components/DynamicComponent/useDynamic";
-const { map } = slMap("map");
-const defaultLayer: Array<DynamicComponent> = [
-  { name: "MapLayer", component: MapLayer, type: "default" },
-  // { name: 'MapLayer', component: MapLayer, type: 'layer' },
-];
-const dynamicRouterLayer: any = ref(null);
-const { manageRef } = useDynamic(dynamicRouterLayer);
-watch(
-  manageRef,
-  (cur) => {
-    registerLayer(cur!);
-  },
-  {
-    once: true,
-  }
-);
-watch(
-  map,
-  (curr) => {
-    if (curr) {
-      curr.addEventListener("click", (e) => {
-        caculatePosition(e.latlng);
-      });
-    }
-  },
-  {
-    once: true,
-  }
-);
-function registerLayer(manage: DynamicComponentManager) {
-  manage.initRegister(defaultLayer);
-}
-function initMapPosition() {
-// [51.505, -0.09], 13 中心经纬度 13层级 对应像素坐标中心
-// 记录偏移
-}
-function caculatePosition(clickPosition: L.LatLng) {
-  const { lat, lng } = clickPosition;
-  // 纬度（-85.05112878° ~ 85.05112878°）范围
-  // 验证内部转化正确性
-  const R = 6378137; // 球半径 单位米
-  const d = 20037508.34 // 球赤道周长一半 单位米
-  const p = map.value!.latLngToContainerPoint(clickPosition);
-  const m = map.value!.latLngToLayerPoint(clickPosition); // 默认地图中心和缩放层级初始的图层 后续拖动都根据改图层变化
-  console.log("============");
-  console.log(`${p.x},${p.y} mec ${m.x}, ${m.y}`);
-  console.log("============");
-  // 墨卡托投影坐标 默认原点为0 ,0经纬度
-  // 商用地图默认原点地图中心，根据初始化配置默认中心计算
-  const x = (lng * 20037508.34) / 180;
-  let y = Math.log(Math.tan(((90 + lat) * Math.PI) / 360)) / (Math.PI / 180);
-  y = (y * 20037508.34) / 180;
+import rbush from "rbush";
+import { useMapStore } from "@/stores/map/useMap";
+import { PixiOverlayLayer } from "@/utils/map/layer/pixi-overlay";
+import { onMounted, ref, toRefs, watch } from "vue";
+import * as PIXI from "pixi.js";
+import { BaseSelectRect, BaseShip, BaseShip2, BaseTextRect, OverlapCollisionBBox, updateBoundByBaseSize } from "@/utils/canvas/pixi";
+import { randomLatlng, randomMMSI, randomType } from "@/utils/random";
+import { AABBUtil } from "@/utils/math";
+const { lMap, initMap } = toRefs(useMapStore());
+const mapElRef = ref<HTMLDivElement | null>(null);
+onMounted(() => {
+  lMap.value = initMap.value(mapElRef.value!);
+  setPixiLayer();
+});
+function setPixiLayer() {
+  const pixiLayer = new PixiOverlayLayer().addTo(lMap.value!);
+  const { stage } = pixiLayer.app!;
+  const shipContainer = new PIXI.Container({
+    eventMode: "static",
+  });
+
+  const baseShip = new Array(1000).fill(0).map((el) => {
+    const ship = {
+      latlng: randomLatlng([33, 111], [44, 144]) as any,
+      type: randomType(["1", "2", "3", "4", "5", "6", "7", "8", "9"]) as any,
+      rotation: Math.random() * 2 * Math.PI,
+    };
+    const base = Math.random() > 0.5 ? BaseShip2(ship) : BaseShip(ship);
+    base.on("click", () => {
+      selector.latlng = base.latlng;
+      selector.position.set(base.x, base.y);
+      selector.visible = true;
+      updateBoundByBaseSize(selector, base);
+    });
+    return base;
+  });
+  // aabb 查看
+  const rectContainer = new PIXI.Container({ eventMode: "static" });
+  const rect = baseShip.map((el) => {
+    const { minX, minY, maxX, maxY } = el.getBounds();
+    const r = new PIXI.Graphics().rect(minX, minY, maxX - minX, maxY - minY).stroke(0x00ff00);
+    r.latlng = el.latlng;
+    return r;
+  });
+  const texts = baseShip.map(el => {
+    const text = BaseTextRect(randomMMSI())
+    text.latlng = el.latlng;
+    text.linkContainer = el;
+    return text;
+  })
+  const selector = BaseSelectRect();
+  stage.addChild(shipContainer, rectContainer);
+  shipContainer.addChild(...baseShip);
+  rectContainer.addChild(...rect, selector, ...texts);
+  const lineContainer = new PIXI.Container();
+  stage.addChild(lineContainer);
+  pixiLayer.updatePosition();
+  const overlap = new OverlapCollisionBBox();
+  pixiLayer.updateContainer(() => {
+    overlap.setAllRbush(texts.map(text => ({... text.getBounds(), data: text})));
+    lineContainer.removeChildren();
+    let renderAABB: any = [];
+    let lines: PIXI.Graphics[] = [];
+    texts.forEach(text => {
+      const {x, y} = lMap.value!.latLngToContainerPoint(text.latlng!)
+      const result = overlap.avoidCollision({minX: x, minY: y, maxX: x, maxY: y, width: 0, height: 0}, text.getBounds(), { minDistance: 30, maxDistance: 50, tollerance: 0 });
+      if (!result) {
+        text.visible = false;
+      } else {
+        text.visible = true;
+        text.position.set(result.minX, result.minY)
+        renderAABB.push(result);
+        const points = AABBUtil.getAABBNearPoints(text.getBounds(), text.linkContainer!.getBounds())
+        const line = new PIXI.Graphics().moveTo(...points[0]).lineTo(...points[1]).stroke({width: 2, color: 0xff0000});
+        line.x = 0;
+        line.y = 0;
+        lines.push(line);
+      }
+      overlap.setAllRbush(renderAABB);
+    })
+    lineContainer.addChild(...lines);
+  })
 }
 </script>
 

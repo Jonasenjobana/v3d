@@ -33,6 +33,11 @@ function updateDirection(clickedIndex: number) {
 
 const tabs = [
   {
+    title: '日历',
+    to: '/component/calendar',
+    key: 'calendar',
+  },
+  {
     title: "表单",
     to: "/component/form",
     key: "form",

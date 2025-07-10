@@ -1,0 +1,12 @@
+<!-- <script src="https://unpkg.com/petite-vue"></script> -->
+<div class="main" id="meeting" v-scope>
+    <input type="text" v-model="name">
+    <span @click="updateName()">{{name}}</span>
+    <!-- <sl-card v-if="show"></sl-card>
+    <sl-card count="name"></sl-card>-->
+    <!-- <sl-card></sl-card>  -->
+    <sl-card style="width: 200px; height: 200px; display: block;" id="card3" :title="name" @ContentEmit="onContentEmit2($event)">
+        <button slot="title" @click="inc($event)">测试</button>
+        <div slot="content"></div>
+    </sl-card>
+</div>

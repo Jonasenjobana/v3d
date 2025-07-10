@@ -3,7 +3,7 @@ import AIChatingRoom from "@/views/AIChatingRoom.vue";
 import MapPlayground from "@/views/MapPlayground.vue";
 import CanvasPlayground from "@/views/CanvasPlayground.vue";
 import TensorPicture from "@/views/AI/tensorflow/TensorPicture.vue";
-
+import EchartPlayground from '@/views/EchartPlayground.vue';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   linkActiveClass: "wtf",
@@ -41,6 +41,11 @@ const router = createRouter({
       component: TensorPicture,
     },
     {
+      path: "/echart",
+      name: "echart",
+      component: EchartPlayground,
+    },
+    {
       path: "/canvas",
       name: "canvas",
       component: CanvasPlayground,
@@ -60,6 +65,11 @@ const router = createRouter({
       redirect: "/component/form",
       component: () => import("@/views/components-lib/ComponentLibMain.vue"),
       children: [
+        {
+          path: 'calendar',
+          name: 'calendar',
+          component: () => import("@/components/Date/SlDate.vue")
+        },
         {
           path: "form",
           name: "form",

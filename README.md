@@ -24,6 +24,16 @@
 ## 路由
 ## 表单
 ## vite
+Echart 速查
+配置按区域功能划分
+- xAxis
+- yAxis
+- series // 组成数据 构成line\pie\scatter\bar等
+- visualMap // echart用例筛选
+- datazoom // 缩放
+- grid // 容器
+- title // 标题
+- tooltip // hover详细
 
 Vue语法速查
 1. defineProps和defineEmits两种用法，只能二选一去声明 
