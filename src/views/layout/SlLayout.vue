@@ -2,7 +2,8 @@
   <v-layout>
     <!-- mobile 会隐藏 进行另外显示 -->
     <v-navigation-drawer rail expand-on-hover :v-model="drawer" :width :rail-width="railWidth">
-      <v-list-item v-for="item in items" :key="item.key" :to="item.to" :active="item.active" :prepend-icon="item.prependIcon">
+      <v-list-item v-for="item in items" :key="item.key" :to="item.to" :active="item.active"
+        :prepend-icon="item.prependIcon">
         <v-menu transition="slide-x-transition" activator="parent" v-if="item.children" :location="'end'" open-on-hover>
           <v-list>
             <v-list-item v-for="child in item.children" :to="child.to" :active="child.active">
@@ -12,16 +13,18 @@
         </v-menu>
       </v-list-item>
     </v-navigation-drawer>
-    <!-- <v-speed-dial v-if="$vuetify.display.mobile" :mobile="true" location="top right" transition="fade-transition" style="position: absolute;">
-      <template v-slot:activator="{ props: activatorProps }">
-        <v-fab v-bind="activatorProps" size="large" icon="$vuetify"></v-fab>
-      </template>
-
-      <v-btn key="1" icon="$success"></v-btn>
-      <v-btn key="2" icon="$info"></v-btn>
-      <v-btn key="3" icon="$warning"></v-btn>
-      <v-btn key="4" icon="$error"></v-btn>
-    </v-speed-dial> -->
+    <v-bottom-navigation v-if="mobile" class="w-100 overflow-auto">
+      <v-list-item class="mobile-nav" v-for="item in items" :key="item.key" :to="item.to" :active="item.active" nav
+        :width="60" :prepend-icon="item.prependIcon">
+        <v-menu transition="slide-x-transition" activator="parent" v-if="item.children" :location="'top'">
+          <v-list>
+            <v-list-item v-for="child in item.children" :to="child.to" :active="child.active">
+              <v-list-item-title>{{ child.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-list-item>
+    </v-bottom-navigation>
     <v-main height="100vh" width="100%" id="main">
       <router-view v-slot="{ Component, route }">
         <keep-alive>
@@ -36,6 +39,7 @@
 import { ref, type PropType } from "vue";
 import { useRouter } from "vue-router";
 import type { SLMenuItem } from "./model";
+import { useDisplay } from "vuetify";
 const drawer = ref(true);
 const props = defineProps({
   items: {
@@ -51,7 +55,7 @@ const props = defineProps({
     default: 60,
   },
 });
-
+const { mobile } = useDisplay();
 const router = useRouter();
 router.afterEach((to) => {
   const { path } = to;
@@ -66,4 +70,14 @@ function activeItem(items: SLMenuItem[], path: string) {
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+.mobile-nav {
+  &:deep(.v-list-item__spacer) {
+    width: 0 !important;
+  }
+  &:deep(.v-list-item__prepend) {
+    grid-area: content;
+    justify-content: center;
+  }
+}
+</style>

@@ -82,6 +82,11 @@ const router = createRouter({
         }
       ],
     },
+    {
+      path: "/mobile",
+      name: "mobile",
+      component: () => import("@/views/mobile/MobilePlayground.vue"),
+    }
   ],
 });
 /**路由权限 守卫 */
