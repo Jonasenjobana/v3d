@@ -33,10 +33,6 @@ export class PixiOverlayLayer extends L.Layer {
     protected initEvent(type: 'on' | 'off') {
         this._map[type]('moveend', this.resetCanvas, this);
         this._map[type]('resize', this.resizeCanvas, this);
-        this._map[type]('mousedown', this.mousedown, this);
-    }
-    protected mousedown(e: L.LeafletMouseEvent) {
-        // this.canvas?.dispatchEvent(e.originalEvent);
     }
     protected resetCanvas() {
         if (!this.canvas) return;

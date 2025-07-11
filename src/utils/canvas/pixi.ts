@@ -273,5 +273,110 @@ export class OverlapCollisionBBox {
     }
     return null;
   }
-
 }
+export const ShaderElement = async () => {
+  const designSize = { w: 1948, h: 1122 }; // 背景图片的宽高
+  const quadGeometry = new PIXI.Geometry({
+    attributes: {
+      aPosition: [
+        -200,
+        -200, // x, y
+        200,
+        -200, // x, y
+        200,
+        200, // x, y,
+        -200,
+        200, // x, y,
+      ],
+      aUV: [0, 0, 1, 0, 1, 1, 0, 1],
+    },
+    indexBuffer: [0, 1, 2, 0, 2, 3],
+  });
+  let vertex = `
+    in vec2 aPosition;
+    in vec2 aUV;
+    out vec2 vUv;
+
+    uniform mat3 uProjectionMatrix;
+    uniform mat3 uWorldTransformMatrix;
+
+    uniform mat3 uTransformMatrix;
+
+
+    void main() {
+      
+        mat3 mvp = uProjectionMatrix * uWorldTransformMatrix * uTransformMatrix;
+        gl_Position = vec4((mvp * vec3(aPosition, 1.0)).xy, 0.0, 1.0);
+        vUv = aUV;
+    }
+  `;
+  let fragment = /*glsl*/`
+    in vec2 vUv;
+    uniform float iTime;
+    uniform sampler2D uTexture;
+    uniform vec2 center;
+    uniform float scale;
+    uniform int iterations;
+
+    vec2 f(vec2 z, vec2 c) {
+      return mat2(z, -z.y, z.x) * z + c;
+    }
+    vec3 palette(float t, vec3 c1, vec3 c2, vec3 c3, vec3 c4) {
+        float x = 1.0 / 3.0;
+        if (t < x) return mix(c1, c2, t/x);
+        else if (t < 2.0 * x) return mix(c2, c3, (t - x)/x);
+        else if (t < 3.0 * x) return mix(c3, c4, (t - 2.0*x)/x);
+        return c4;
+    }
+
+    void main() {
+        vec2 uv = fract(vUv * 10.0);
+        vec2 c = center + 4.0 * (uv - vec2(0.5)) / scale;
+        vec2 z = vec2(0.0);
+        bool escaped = false;
+        int j;
+        for (int i = 0; i < 65536; i++) {
+            if(i > iterations) break;
+            j = i;
+            z = f(z, c);
+            if (length(z) > 2.0) {
+                escaped = true;
+                break;
+            }
+        }
+
+        gl_FragColor.rgb = escaped ? 
+            max(
+                1.0, log(scale)) * palette(float(j)/ float(iterations),
+                vec3(0.02, 0.02, 0.03),
+                vec3(0.1, 0.2, 0.3),
+                vec3(0.0, 0.3, 0.2),
+                vec3(0.0, 0.5, 0.8)
+            ) : vec3(0.0);
+        float r = texture2D(uTexture, vUv).r;
+        gl_FragColor.r = r * sin(iTime);
+        // gl_FragColor.rgb = r;
+    }
+    `;
+  const shader = PIXI.Shader.from({
+    gl: {
+      vertex,
+      fragment,
+    },
+    resources: {
+      uTexture: (await PIXI.Assets.load("/image/perlin.jpg")).source,
+      uniforms: {
+        center: { value: [.367, .303], type: "vec2<f32>" },
+        iTime: { value: 0, type: "f32" },
+        scale: { value: 1, type: 'f32' },
+        iterations: { value: 256, type: 'i32' },
+      },
+    },
+  });
+  const quad = new PIXI.Mesh({
+    geometry: quadGeometry,
+    shader,
+  });
+  quad.position.set(600, 600);
+  return quad;
+};

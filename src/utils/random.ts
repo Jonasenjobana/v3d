@@ -18,7 +18,7 @@ export function randomLatlng(lt: [number, number], rb: [number, number]) {
 }
 /**
  * 随机类型
- * @returns 
+ * @returns
  */
 export function randomType(types: string[]) {
   // 随机选择1-9的数字
@@ -28,19 +28,28 @@ export function randomType(types: string[]) {
 /**
  * 随机mmsi 取 00000000~99999999
  * 缺0补0 固定8位
- * @returns 
+ * @returns
  */
 export function randomMMSI(): string {
-  return Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
+  return Math.floor(Math.random() * 100000000)
+    .toString()
+    .padStart(8, "0");
 }
 /**
  * 随机生成uuid
- * @returns 
+ * @returns
  */
 export function uuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0,
-      v = c === 'x' ? r : (r & 0x3) | 0x8;
+      v = c === "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
+}
+
+// 平滑噪声函数（基于累积时间）
+export function noise(t: number, seed: number = Math.random()) {
+  t += seed;
+  const x = Math.sin(t * 2) * 43758.5453; // 用sin生成周期性平滑值
+  return x - Math.floor(x); // 取0-1之间的小数
 }
