@@ -3,15 +3,22 @@ import AIChatingRoom from "@/views/AIChatingRoom.vue";
 import MapPlayground from "@/views/MapPlayground.vue";
 import CanvasPlayground from "@/views/CanvasPlayground.vue";
 import TensorPicture from "@/views/AI/tensorflow/TensorPicture.vue";
-import EchartPlayground from '@/views/EchartPlayground.vue';
+import EchartPlayground from "@/views/EchartPlayground.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   linkActiveClass: "wtf",
   routes: [
     {
-      path: '/login',
-      name: 'login',
-      component: () => import("@/views/System/Login.vue")
+      path: "/login",
+      name: "login",
+      component: () => import("@/views/System/Login.vue"),
+    },
+    {
+      path: "/mobile",
+      name: "mobile",
+      redirect: "/mobile/home",
+      component: () => import("@/views/mobile/MobilePlayground.vue"),
+      children: [{ path: "home", name: "mobileHome", component: () => import("@/views/mobile/home/MobileHome.vue") }],
     },
     {
       path: "/3D",
@@ -27,7 +34,7 @@ const router = createRouter({
           path: "three2",
           name: "three2",
           component: () => import("@/views/3D/three/demo2/ThreeDemo2.vue"),
-        }
+        },
       ],
     },
     {
@@ -66,9 +73,9 @@ const router = createRouter({
       component: () => import("@/views/components-lib/ComponentLibMain.vue"),
       children: [
         {
-          path: 'calendar',
-          name: 'calendar',
-          component: () => import("@/components/Date/SlDate.vue")
+          path: "calendar",
+          name: "calendar",
+          component: () => import("@/components/Date/SlDate.vue"),
         },
         {
           path: "form",
@@ -79,24 +86,18 @@ const router = createRouter({
           path: "table",
           name: "table",
           component: () => import("@/views/components-lib/table/VuetifyTable.vue"),
-        }
+        },
       ],
     },
-    {
-      path: "/mobile",
-      name: "mobile",
-      component: () => import("@/views/mobile/MobilePlayground.vue"),
-    }
   ],
 });
 /**路由权限 守卫 */
 router.beforeEach((to, from, next) => {
+  console.log(to ,from)
   next();
-})
+});
 /**日志 数据埋点 */
-router.afterEach((to, from) => {
-  
-})
+router.afterEach((to, from) => {});
 /**组件内部 守卫 */
 // onBeforeRouteLeave(() => {});
 // onBeforeRouteUpdate(() => {});

@@ -74,7 +74,6 @@ function setPixiLayer() {
       const c = el2!.shader!.resources.uniforms.uniforms.center;
       el2!.shader!.resources.uniforms.uniforms.scale += 1;
       // el2!.shader!.resources.uniforms.uniforms.center = [c[0] + movementX * 0.01, c[1] + movementY * 0.01];
-      
     })
     shaderContainer.addChild(el);
   });
@@ -109,7 +108,7 @@ function setPixiLayer() {
       if (el2) {
         // 0.3~0.7 平滑生成
         const v = noise(delta.lastTime / 100000000, .3985123)
-        el2.shader!.resources.uniforms.uniforms.iTime = Math.sin(v);
+        el2.shader!.resources.uniforms.uniforms.iTime = delta.lastTime / 100;
         const factor = Math.max(0.1, Math.log(el2.shader!.resources.uniforms.uniforms.scale));
         el2.shader!.resources.uniforms.uniforms.iterations = factor * 500;
       }

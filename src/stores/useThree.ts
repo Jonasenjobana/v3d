@@ -1,10 +1,15 @@
 import { defineStore } from "pinia";
-import { nextTick, reactive, toRef, type MaybeRef, type Reactive } from "vue";
+import { nextTick, reactive, shallowReactive, toRef, type MaybeRef, type Reactive, type ShallowReactive } from "vue";
 import * as THREE from "three";
 import { OrbitControls, RenderPass } from "three/examples/jsm/Addons.js";
 import { AnimeControl } from "@/views/3D/three/utils/AnimeControl";
 export const useSlThree = defineStore("slThree", () => {
-  const slThreeData: Reactive<any> = reactive({
+  const slThreeData: ShallowReactive<{
+    scene: THREE.Scene | null;
+    render: THREE.WebGLRenderer | null;
+    camera: THREE.Camera | null;
+    controls: any;
+  }> = shallowReactive({
     scene: null,
     render: null,
     camera: null,

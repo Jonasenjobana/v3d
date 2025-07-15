@@ -46,6 +46,7 @@
     "@vue/tsconfig": "^0.7.0",
     "less": "^4.2.2",
     "npm-run-all2": "^7.0.2",
+    "postcss-pxtorem": "^6.1.0",
     "typescript": "~5.7.3",
     "vite": "^6.1.0",
     "vite-plugin-vue-devtools": "^7.7.2",

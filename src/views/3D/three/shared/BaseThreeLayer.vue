@@ -2,7 +2,7 @@
   <div class="base-three-layer">
     <div class="router">
         <canvas class="three-canvas" ref="threeCanvas"></canvas>
-        <router-view v-slot="{ Component, route }">
+        <router-view v-slot="{ Component, route }" v-if="showChild">
           <component :is="Component"></component>
         </router-view>
       </div>
@@ -18,14 +18,13 @@ import { useSlThree } from "@/stores/useThree";
 const threeCanvas = ref<HTMLCanvasElement>({} as HTMLCanvasElement);
 const { slThreeInstance } = useSLThree(threeCanvas, {});
 const {initThree, slThreeData} = useSlThree();
+const showChild = ref(false);
 onMounted(() => {
   initThree(threeCanvas, {}).then(() => {
     (slThreeData!.camera as THREE.PerspectiveCamera)!.position.set(0, 0, 5);
+    showChild.value = true
   })
 });
-onBeforeRouteUpdate((to, from) => {
-  
-})
 
 </script>
 
