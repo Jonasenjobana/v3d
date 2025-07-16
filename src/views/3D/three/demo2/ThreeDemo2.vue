@@ -2,7 +2,6 @@
 
 <script setup lang="ts">
 import { inject, nextTick, onMounted, onUnmounted, watch } from "vue";
-import { SLTHREE } from "../utils/SlThree";
 import * as THREE from "three";
 import { useSlThree } from "@/stores/useThree";
 const {slThreeData} = useSlThree()

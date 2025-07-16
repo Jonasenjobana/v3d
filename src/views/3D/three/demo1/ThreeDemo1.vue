@@ -5,27 +5,28 @@
 </template>
 
 <script setup lang="ts">
-import { inject, nextTick, onMounted, onUnmounted, watch, watchEffect } from "vue";
-import { SLTHREE } from "../utils/SlThree";
+import { inject, nextTick, onMounted, onUnmounted, ref, toValue, watch, watchEffect, type Ref } from "vue";
 import * as THREE from "three";
 import gsap from "gsap";
 import { useSlThree } from "@/stores/useThree";
+import { WaterPool } from "./arc/model";
 // const slThreeInstance = inject(SLTHREE);
-const { slThreeData } = useSlThree();
+const slThree = useSlThree(),
+  { slThreeData } = slThree;
+const pool = new WaterPool();
+watch(
+  () => slThree.tick,
+  () => {
+    pool?.tick();
+  }
+);
 onMounted(() => {
-    const map = new THREE.TextureLoader().load( "/image/perlin.jpg" );
-    new THREE.ShaderMaterial({
-      vertexShader: /*glsl*/`
-        
-      `
-    })
-    const material = new THREE.SpriteMaterial({ map });
-    new Array(500).fill(0).map(() => {
-      const sp = new THREE.Sprite(material);
-      sp.position.set(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50);
-      slThreeData.scene!.add(sp);
-      return sp;
-    });
+  slThreeData.scene!.add(pool.mesh);
+  const geoCube = new THREE.BoxGeometry(10, 10, 10);
+  const meshcube = new THREE.Mesh(geoCube, new THREE.MeshBasicMaterial({ color: 0x00ffff }));
+  pool.mesh.add(meshcube);
+  meshcube.position.set(0, 0, 0);
+  pool.mesh.matrixAutoUpdate = true;
 });
 onUnmounted(() => {});
 </script>

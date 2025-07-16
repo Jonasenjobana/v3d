@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { nextTick, reactive, shallowReactive, toRef, type MaybeRef, type Reactive, type ShallowReactive } from "vue";
+import { nextTick, reactive, ref, shallowReactive, toRef, type MaybeRef, type Reactive, type Ref, type ShallowReactive } from "vue";
 import * as THREE from "three";
 import { OrbitControls, RenderPass } from "three/examples/jsm/Addons.js";
 import { AnimeControl } from "@/views/3D/three/utils/AnimeControl";
@@ -15,9 +15,15 @@ export const useSlThree = defineStore("slThree", () => {
     camera: null,
     controls: {},
   });
+  const tick = ref(Symbol(1))
   const animeControl = new AnimeControl(60);
-  async function initThree(elRef: MaybeRef<HTMLElement>, config: any) {
+  const container: Ref<HTMLElement | null> = ref(null);
+  async function initThree(elRef: MaybeRef<HTMLCanvasElement>, config: any) {
     const el = toRef(elRef).value;
+    const {width, height} = el.getBoundingClientRect();
+    container.value = el;
+    el.width = width;
+    el.height = height;
     await nextTick();
     const tScene = (slThreeData.scene = new THREE.Scene());
     const tRender = (slThreeData.render = new THREE.WebGLRenderer({ antialias: true, canvas: el }));
@@ -25,17 +31,30 @@ export const useSlThree = defineStore("slThree", () => {
     const orbitControls = (slThreeData.controls["orbit"] = new OrbitControls(tCamera, el));
     animate();
   }
-  function renderFrame() {
-    const { render, scene, camera } = slThreeData;
-    render!.render(scene!, camera!);
+
+  let renderFrame = (cb?: Function) => {
+    if (!cb) {
+      const { render, scene, camera } = slThreeData;
+      render!.render(scene!, camera!);
+    }
+    tick.value = Symbol(1);
   }
   function animate() {
     animeControl.start(() => {
       renderFrame();
     });
   }
+  function renderCb(cb: () => void) {
+    renderFrame = () => {
+      cb();
+      tick.value = Symbol(1);
+    };
+  }
   return {
     slThreeData,
     initThree,
+    tick,
+    container,
+    renderCb,
   };
 });

@@ -53,3 +53,7 @@ export function noise(t: number, seed: number = Math.random()) {
   const x = Math.sin(t * 2) * 43758.5453; // 用sin生成周期性平滑值
   return x - Math.floor(x); // 取0-1之间的小数
 }
+
+export function randomNumber(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
