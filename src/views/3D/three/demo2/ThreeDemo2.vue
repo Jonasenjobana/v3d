@@ -20,6 +20,8 @@ onMounted(() => {
 onUnmounted(() => {
   slThreeData!.scene!.remove(group);
 });
+const emit = defineEmits();
+emit('')
 </script>
 
 <style scoped></style>

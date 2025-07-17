@@ -1,7 +1,7 @@
 <template>
     <div>
         <span>{{ title }}</span>
-        <button @click="total++">{{ total }}</button>
+        <button @click="total++" onclick="">{{ total }}</button>
         {{ tip }}
     </div>
 </template>

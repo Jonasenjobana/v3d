@@ -1,6 +1,6 @@
 <template>
   <div class="demo1">
-    <!-- <button @click="play(slThreeInstance!.renderState)">{{ slThreeInstance?.renderState ? "暂停" : "播放" }}</button> -->
+    <!-- <button @click="test">1111</button> -->
   </div>
 </template>
 
@@ -20,13 +20,20 @@ watch(
     pool?.tick();
   }
 );
+const emit = defineEmits(["tick"]);
 onMounted(() => {
-  slThreeData.scene!.add(pool.mesh);
+  setTimeout(() => {
+    slThreeData.scene!.add(pool.mesh);
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(100, 100, 100);
+  slThreeData.scene!.add(light);
   const geoCube = new THREE.BoxGeometry(10, 10, 10);
-  const meshcube = new THREE.Mesh(geoCube, new THREE.MeshBasicMaterial({ color: 0x00ffff }));
-  pool.mesh.add(meshcube);
-  meshcube.position.set(0, 0, 0);
+  // const meshcube = new THREE.Mesh(geoCube, new THREE.MeshPhongMaterial({ color: 0x00ffff, envMap: slThreeData.scene!.environment}));
+  // pool.mesh.add(meshcube);
+  pool.material.uniforms.uEnvMap.value = slThreeData.scene!.environment?.clone();
+  // meshcube.position.set(0, 0, 0);
   pool.mesh.matrixAutoUpdate = true;
+  }, 1000);
 });
 onUnmounted(() => {});
 </script>
