@@ -292,7 +292,17 @@
 9. 如果需要材质透明 ShaderMaterial等材质（除了RawShaderMaterial) 需要关闭深度写和允许透明， 中间层可以根据需求修改颜色混入模式
     - transparent: true
     - depthWrite: false
-10. 
+10. material 内部
+- onBeforeCompile
+    着色器编译前 可以在这里修改原始着色器 通过replace进行增删
+- onBeforeRender
+    渲染前执行，回调
+11. render
+- setRenderTarget
+    1. 传null 默认是输出画布的 否则则将渲染结果存入render类，输出可通过贴图方式
+- EffectComposer
+    2. 后处理 对于renderTarget进行后期处理（像素化、边缘发光、亮度、崩坏等）特效
+- render可以同时输出多个而不一定只能控制一个render
 ## 结构
 - 渲染器
 - 场景

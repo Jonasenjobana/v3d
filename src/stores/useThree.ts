@@ -5,14 +5,14 @@ import { OrbitControls, RenderPass } from "three/examples/jsm/Addons.js";
 import { AnimeControl } from "@/views/3D/three/utils/AnimeControl";
 export const useSlThree = defineStore("slThree", () => {
   const slThreeData: ShallowReactive<{
-    scene: THREE.Scene | null;
-    render: THREE.WebGLRenderer | null;
-    camera: THREE.Camera | null;
+    scene: THREE.Scene;
+    render: THREE.WebGLRenderer;
+    camera: THREE.Camera;
     controls: any;
   }> = shallowReactive({
-    scene: null,
-    render: null,
-    camera: null,
+    scene: null!,
+    render: null!,
+    camera: null!,
     controls: {},
   });
   const tick = ref(Symbol(1))
@@ -28,6 +28,9 @@ export const useSlThree = defineStore("slThree", () => {
     const tScene = (slThreeData.scene = new THREE.Scene());
     const tRender = (slThreeData.render = new THREE.WebGLRenderer({ antialias: true, canvas: el }));
     const tCamera = (slThreeData.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000));
+    tCamera.position.set(0, 0, 100);
+    tCamera.updateProjectionMatrix();
+    tCamera.lookAt(0,0,0)
     const orbitControls = (slThreeData.controls["orbit"] = new OrbitControls(tCamera, el));
     animate();
   }
