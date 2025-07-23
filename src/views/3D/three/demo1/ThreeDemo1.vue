@@ -14,6 +14,7 @@ import { GridPlane } from "./arc/plane";
 import { BloomPass, EffectComposer, GlitchPass, OrbitControls, OutlinePass, RenderPass, UnrealBloomPass } from "three/examples/jsm/Addons.js";
 import { SpritePartial } from "./arc/sprite";
 import { GlitchCube } from "./arc/glitch-cube";
+import { ShaderPlane } from "./arc/shader";
 // const slThreeInstance = inject(SLTHREE);
 const slThree = useSlThree(),
   { slThreeData, renderCb } = slThree;
@@ -35,9 +36,19 @@ onMounted(() => {
   setTimeout(() => {
     // testPass();
     // testPartial();
-    testGlitch();
+    // testGlitch();
+    testShader();
   }, 1000);
 });
+function testShader() {
+  const { render, scene: mainScene, camera: mainCamera } = slThreeData;
+  const m = new ShaderPlane(mainScene.environment!.clone()).getPalneMesh();
+  mainScene.add(m);
+  renderCb(() => {
+    m.material.uniforms.uTime.value += 0.1
+    render.render(mainScene, mainCamera);
+  })
+}
 function testGlitch() {
   const { render, scene: mainScene, camera: mainCamera } = slThreeData;
   const gc = new GlitchCube()
