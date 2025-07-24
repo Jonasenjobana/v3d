@@ -42,10 +42,15 @@ onMounted(() => {
 });
 function testShader() {
   const { render, scene: mainScene, camera: mainCamera } = slThreeData;
-  const m = new ShaderPlane(mainScene.environment!.clone()).getPalneMesh();
-  mainScene.add(m);
+  const m = new ShaderPlane()
+  m.getPalneMesh();
+  // (pool.mesh.material as any).uniforms.uEnvMap.value = slThreeData.scene!.environment?.clone();
+  m.mesh.material.uniforms.uEnvMap.value = slThreeData.scene!.environment?.clone();
+  m.mesh.material.uniforms.perlinTexture.value = new THREE.TextureLoader().load("/image/perlin.jpg");
+  mainScene.add(m.mesh);
+  // mainScene.add(pool.mesh);
   renderCb(() => {
-    m.material.uniforms.uTime.value += 0.1
+    m.mesh.material.uniforms.uTime.value += 0.1
     render.render(mainScene, mainCamera);
   })
 }
@@ -102,16 +107,16 @@ function testPass() {
   renderTarget = new THREE.RenderTarget(width, height);
   effect = new EffectComposer(slThreeData.render!, renderTarget);
   let i = 0;
-  // slThreeData.scene!.add(pool.mesh);
+  slThreeData.scene!.add(pool.mesh);
   const envLigth = new THREE.AmbientLight(0xffffff);
-  slThreeData.scene!.add(envLigth);
+  // slThreeData.scene!.add(envLigth);
   const light = new THREE.PointLight(0xffffff, 100);
   slThreeData.scene?.add(group);
   light.position.set(1, 10, 1);
   light.castShadow = true;
-  testScene.add(light.clone());
-  slThreeData.scene!.add(new THREE.PointLightHelper(light));
-  slThreeData.scene!.add(light);
+  // testScene.add(light.clone());
+  // slThreeData.scene!.add(new THREE.PointLightHelper(light));
+  // slThreeData.scene!.add(light);
   const geoCube = new THREE.BoxGeometry(10, 10, 10);
   const meshcube = new THREE.Mesh(geoCube, new THREE.MeshPhongMaterial({ color: 0x00ffff, envMap: slThreeData.scene!.environment }));
   meshcube.castShadow = true;
@@ -132,10 +137,10 @@ function testPass() {
   // effect.addPass(glitch)
   // testScene!.add(new THREE.AmbientLight(0xffffff));
 
-  // pool.mesh.add(meshcube);
-  // pool.material.uniforms.uEnvMap.value = slThreeData.scene!.environment?.clone();
+  pool.mesh.add(meshcube);
+  pool.material.uniforms.uEnvMap.value = slThreeData.scene!.environment?.clone();
   // meshcube.position.set(0, 0, 0);
-  const plane = new GridPlane().addTo(slThreeData.scene!);
+  // const plane = new GridPlane().addTo(slThreeData.scene!);
   // renderTarget.texture.offset.set(0.5, 0.3);
   // plane.material.map = renderTarget.texture;
 }

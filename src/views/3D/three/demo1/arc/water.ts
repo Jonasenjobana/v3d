@@ -28,7 +28,7 @@ export class WaterPool {
         uniform float uTime;
         uniform float uWaveHeight;
         uniform float uWaveFrequency;
-        uniform float uNoiseTexture;
+        uniform sampler2D uNoiseTexture;
         varying vec3 vNormal;
         varying vec3 vPosition;
         varying vec2 vUv;
@@ -40,22 +40,23 @@ export class WaterPool {
           float wave2X = sin(p.x * uWaveFrequency * 0.5 + uTime * 0.7) * uWaveHeight * 0.5;
           float wave2Z = sin(p.z * uWaveFrequency * 0.5 + uTime * 0.7) * uWaveHeight * 0.5;
           return p + vec3(0, waveX + waveZ + wave2X + wave2Z, 0); // 沿Y轴位移（更合理）
-      }
+        }
         void main() {
             vUv = uv;
             // 最终顶点位置
             vec3 newPosition = newPositionCaculate(position);
             float esp = 0.001;
+            float r = texture2D(uNoiseTexture, uv).r;
             // 取相邻点
             vec3 neighborX = newPositionCaculate(position+vec3(esp, .0, .0));
             vec3 tangentX = neighborX - newPosition;
             vec3 neighborZ = newPositionCaculate(position+vec3(.0, .0, esp));
             vec3 tangentZ = neighborZ - newPosition;
-            vNormal = normal;
-            // vNormal = normalize(cross(tangentZ, tangentX));
-            vPosition = (modelViewMatrix * vec4(newPosition, 1.0)).rgb;
+            // vNormal = normal;
+            vNormal = normalize(cross(tangentZ, tangentX));
+            vPosition = (modelViewMatrix * vec4(position, 1.0)).rgb;
             sunDirection = (vec4(45.0, 46.0, 45.0, 1.0)).rgb;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position * r, 1.0);
         }
         `,
       fragmentShader: /*glsl*/ `
@@ -71,9 +72,9 @@ export class WaterPool {
             // 入射光向量
             vec3 lightDir = normalize(sunDirection - vPosition);
             // 计算视线方向
-            vec3 viewDir = normalize(cameraPosition - vPosition);
+            vec3 viewDir = normalize(vPosition - cameraPosition);
             // 计算反射方向
-            vec3 reflectDir = reflect(-viewDir, normalize(vNormal));
+            vec3 reflectDir = reflect(viewDir, normalize(vNormal));
             // 菲涅尔效应（控制反射强度）
             // 非金属（低反射）
             float F0 = 0.03; // 塑料/玻璃，正视角几乎无反射
@@ -84,7 +85,7 @@ export class WaterPool {
             float fresnel = F0 + (1.0 - F0) * pow(1.0 - dotNV, exponent);
 
             // 从立方体贴图采样反射颜色 
-            vec4 reflectionColor = textureCube(uEnvMap, reflectDir);
+            vec4 reflectionColor = textureCube(uEnvMap, vNormal);
             // 基础水颜色
             vec4 baseColor = vec4(uColor, 1.0);
             float strength = max(dot(lightDir, vNormal), 0.0) / length(lightDir)*length(vNormal);
@@ -93,6 +94,7 @@ export class WaterPool {
             // 添加水面扰动效果
             gl_FragColor.rgb += sin(vUv.x * 10.0 + vUv.y * 5.0 + uTime) * 0.05;
             gl_FragColor.a=strength;
+            gl_FragColor = reflectionColor;
             // gl_FragColor = vec4(vNormal, 1.0);
             // gl_FragColor.rgb *= strength;
         }

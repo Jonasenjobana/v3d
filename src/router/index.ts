@@ -75,7 +75,7 @@ const router = createRouter({
         {
           path: "calendar",
           name: "calendar",
-          component: () => import("@/components/Date/SlDate.vue"),
+          component: () => import("@/components/Date/DatePlayground.vue"),
         },
         {
           path: "form",
