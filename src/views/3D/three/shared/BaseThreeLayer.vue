@@ -32,7 +32,7 @@ onMounted(() => {
     slThreeData.scene!.add(axe);
     slThreeData.scene!.add(new THREE.AmbientLight(0xfff));
     const rgbeLoader = new RGBELoader();
-    rgbeLoader.load(hdr, function (envMap) {
+    rgbeLoader.load('https://threejs.org/examples/textures/equirectangular/venice_sunset_1k.hdr', function (envMap) {
       console.log(envMap);
       slThreeData.scene!.environment = envMap;
       slThreeData.scene!.background = envMap;

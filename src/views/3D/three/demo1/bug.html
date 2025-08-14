@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fix TextureCube Black Issue</title>
+    <style>body { margin: 0; }</style>
+</head>
+<body>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+
+        // 初始化场景
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        const controls = new OrbitControls(camera, renderer.domElement);
+
+        // 1. 加载2D纹理
+        const texture2D = new THREE.TextureLoader().load(
+            'https://picsum.photos/id/1018/1024/1024',
+            (tex) => tex.anisotropy = renderer.capabilities.getMaxAnisotropy()
+        );
+        texture2D.wrapS = texture2D.wrapT = THREE.RepeatWrapping;
+        texture2D.repeat.set(5, 5);
+
+        // 2. 加载立方体贴图（HDR转CubeTexture）
+        let envMap;
+        new RGBELoader()
+            .load('https://threejs.org/examples/textures/equirectangular/venice_sunset_1k.hdr', (hdrTexture) => {
+                hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
+                envMap = hdrTexture;
+                
+                // 创建材质
+                createMaterial();
+            });
+
+        // 3. 创建材质（关键修复部分）
+        function createMaterial() {
+            const material = new THREE.ShaderMaterial({
+                defines: {
+                    ENVMAP_TYPE_CUBE: 1
+                },
+                uniforms: {
+                    uTexture2D: { value: texture2D },
+                    uEnvMap: { value: envMap }, // 确认传递的是CubeTexture
+                    uMix: { value: 0.9 }
+                },
+                vertexShader: `
+                    varying vec2 vUv;
+                    varying vec3 vNormal;
+                    varying vec3 vWorldPos;
+                    uniform sampler2D uTexture2D;
+
+                    void main() {
+                        vUv = uv;
+                        vec3 color2D = texture2D(uTexture2D, uv).rgb;
+                        vNormal = normalize(normalMatrix * normal);
+                        vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+                        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position.rg, color2D.b, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    #include <envmap_pars_fragment>
+                    uniform sampler2D uTexture2D;
+                    uniform samplerCube uEnvMap;
+                    uniform float uMix;
+                    
+                    varying vec2 vUv;
+                    varying vec3 vNormal;
+                    varying vec3 vWorldPos;
+
+                    void main() {
+                        // 采样2D纹理（正确使用vUv）
+                        vec3 color2D = texture2D(uTexture2D, vUv).rgb;
+                        
+                        // 采样立方体贴图（正确使用三维反射方向）
+                        vec3 viewDir = normalize(vWorldPos - cameraPosition);
+                        vec3 reflectDir = reflect(viewDir, normalize(vNormal));
+                        vec3 colorCube = textureCube(uEnvMap, reflectDir).rgb;
+                        
+                        // 混合两种纹理（验证两者是否都有效）
+                        gl_FragColor = envColor;
+                    }
+                `
+            });
+
+            // 创建网格
+            const geometry = new THREE.SphereGeometry(3, 64, 64);
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            // 相机位置
+            camera.position.z = 8;
+
+            // 交互：鼠标控制混合比例
+            window.addEventListener('mousemove', (e) => {
+                material.uniforms.uMix.value = e.clientX / window.innerWidth;
+            });
+
+            // 动画
+            function animate() {
+                requestAnimationFrame(animate);
+                mesh.rotation.y += 0.005;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // 窗口 resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
+    

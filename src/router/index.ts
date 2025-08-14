@@ -4,22 +4,16 @@ import MapPlayground from "@/views/MapPlayground.vue";
 import CanvasPlayground from "@/views/CanvasPlayground.vue";
 import TensorPicture from "@/views/AI/tensorflow/TensorPicture.vue";
 import EchartPlayground from "@/views/EchartPlayground.vue";
+import LoginRoute from "./login.route";
+import MobileRoute from "./mobile.route";
+import CssRoute from "./css.route";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   linkActiveClass: "wtf",
   routes: [
-    {
-      path: "/login",
-      name: "login",
-      component: () => import("@/views/System/Login.vue"),
-    },
-    {
-      path: "/mobile",
-      name: "mobile",
-      redirect: "/mobile/home",
-      component: () => import("@/views/mobile/MobilePlayground.vue"),
-      children: [{ path: "home", name: "mobileHome", component: () => import("@/views/mobile/home/MobileHome.vue") }],
-    },
+    ...LoginRoute,
+    ...MobileRoute,
+    ...CssRoute,
     {
       path: "/3D",
       name: "3D",

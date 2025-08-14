@@ -13,6 +13,8 @@ import '@/styles/vuetify/index.less';
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 const app = createApp(App)
 const vuetify = createVuetify({
@@ -42,4 +44,5 @@ const vuetify = createVuetify({
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
+app.use(ElementPlus)
 app.mount('#app')

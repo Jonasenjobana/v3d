@@ -9,6 +9,19 @@ import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import SLLayout from "./views/layout/SlLayout.vue";
 const items: Reactive<IVListItem[]> = reactive([
   {
+    title: 'CSS',
+    to: '/css',
+    prependIcon: 'mdi-robot-happy-outline',
+    children: [
+      {
+        title: 'animeLine',
+        to: '/css/anime-line',
+        // prependIcon: "mdi-video-3d-variant",
+        rounded: 'xl',
+      },
+    ],
+  },
+  {
     title: "3D",
     to: "/3D",
     prependIcon: "mdi-video-3d-variant",

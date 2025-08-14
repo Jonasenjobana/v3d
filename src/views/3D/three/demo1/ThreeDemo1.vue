@@ -11,10 +11,12 @@ import gsap from "gsap";
 import { useSlThree } from "@/stores/useThree";
 import { WaterPool } from "./arc/water";
 import { GridPlane } from "./arc/plane";
-import { BloomPass, EffectComposer, GlitchPass, OrbitControls, OutlinePass, RenderPass, UnrealBloomPass } from "three/examples/jsm/Addons.js";
+import { BloomPass, EffectComposer, GlitchPass, OrbitControls, OutlinePass, RGBELoader, RenderPass, UnrealBloomPass } from "three/examples/jsm/Addons.js";
 import { SpritePartial } from "./arc/sprite";
 import { GlitchCube } from "./arc/glitch-cube";
 import { ShaderPlane } from "./arc/shader";
+import { uuid } from "@/utils/random";
+import hdr from "@/assets/hdr/Ultimate_Skies_4k_0027.hdr?url";
 // const slThreeInstance = inject(SLTHREE);
 const slThree = useSlThree(),
   { slThreeData, renderCb } = slThree;
@@ -41,31 +43,50 @@ onMounted(() => {
   }, 1000);
 });
 function testShader() {
+  //创建立方体渲染器目标对象
+  const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(128, {
+    format: THREE.RGBFormat,
+    generateMipmaps: true,
+    minFilter: THREE.LinearMipmapLinearFilter,
+  });
+
+  //创建立方体相机
+  const cubeCamera = new THREE.CubeCamera(1, 100000, cubeRenderTarget);
+
   const { render, scene: mainScene, camera: mainCamera } = slThreeData;
-  const m = new ShaderPlane()
-  m.getPalneMesh();
+  mainScene.add(cubeCamera);
+
+  const m = new ShaderPlane();
+  const t = new THREE.TextureLoader().load("/image/water.jpg");
+  const t2 = new THREE.TextureLoader().load("/image/perlin.jpg");
+  // 1. 加载2D纹理
+  const texture2D = new THREE.TextureLoader().load("https://picsum.photos/id/1018/1024/1024", (tex) => (tex.anisotropy = render.capabilities.getMaxAnisotropy()));
+  texture2D.wrapS = texture2D.wrapT = THREE.RepeatWrapping;
+  texture2D.repeat.set(5, 5);
   // (pool.mesh.material as any).uniforms.uEnvMap.value = slThreeData.scene!.environment?.clone();
-  m.mesh.material.uniforms.uEnvMap.value = slThreeData.scene!.environment?.clone();
-  m.mesh.material.uniforms.perlinTexture.value = new THREE.TextureLoader().load("/image/perlin.jpg");
+  const rgbeLoader = new RGBELoader();
+  m.shaderMa(t2, mainScene.environment);
   mainScene.add(m.mesh);
   // mainScene.add(pool.mesh);
-  renderCb(() => {
-    m.mesh.material.uniforms.uTime.value += 0.1
-    render.render(mainScene, mainCamera);
-  })
+  requestAnimationFrame(() => {
+    //   renderCb(() => {
+    //   m.mesh.material.uniforms.uTime.value += 0.1;
+    //   render.render(mainScene, mainCamera);
+    // });
+  });
 }
 function testGlitch() {
   const { render, scene: mainScene, camera: mainCamera } = slThreeData;
-  const gc = new GlitchCube()
-  const {scene} = slThreeData
+  const gc = new GlitchCube();
+  const { scene } = slThreeData;
   const cube = gc.cube();
-  scene.add(cube)
+  scene.add(cube);
   renderCb(() => {
-      i = i+1;
-      cube.material.time = i
-      render.setRenderTarget(null);
-      render.render(mainScene, mainCamera);
-  })
+    i = i + 1;
+    cube.material.time = i;
+    render.setRenderTarget(null);
+    render.render(mainScene, mainCamera);
+  });
 }
 let tickCb = () => {};
 function testPartial() {
@@ -89,7 +110,7 @@ function testPartial() {
   effect.addPass(new GlitchPass());
   effect.addPass(new BloomPass());
   tickCb = () => {
-    if ( target) {
+    if (target) {
       count %= 10000;
       partial.rotateX(Math.sin(count++ / 10000));
       effect.render();
@@ -138,11 +159,8 @@ function testPass() {
   // testScene!.add(new THREE.AmbientLight(0xffffff));
 
   pool.mesh.add(meshcube);
-  pool.material.uniforms.uEnvMap.value = slThreeData.scene!.environment?.clone();
-  // meshcube.position.set(0, 0, 0);
-  // const plane = new GridPlane().addTo(slThreeData.scene!);
-  // renderTarget.texture.offset.set(0.5, 0.3);
-  // plane.material.map = renderTarget.texture;
+  const env = slThreeData.scene!.environment?.clone();
+  pool.material.uniforms.uEnvMap.value = env;
 }
 function spriteTest() {}
 function testRenderTarget() {

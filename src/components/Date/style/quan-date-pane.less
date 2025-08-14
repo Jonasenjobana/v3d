@@ -1,0 +1,58 @@
+@cell-color: #606266;
+@cell-color-active: #409eff;
+@cell-color-disabled: #c0c4cc;
+@cell-color-range: #e4e7ed;
+.quan-date-pane {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    height: 300px;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #e2e2e2;
+}
+.quan-date-pane-head {
+
+}
+
+.quan-date-pane-cell {
+    &.month-cell {
+
+    }
+    &.year-cell {
+
+    }
+    &.week-cell {
+
+    }
+    &__item {
+        display: flex;
+    }
+    color: @cell-color;
+    &:hover {
+        color: @cell-color-active;
+    }
+    &--is-today {
+        color: @cell-color-active;
+    }
+    &--selected {
+        color: @cell-color-active;
+    }
+    &--disabled {
+        color: @cell-color-disabled;
+        cursor: not-allowed;
+    }
+    &--range {
+        color: @cell-color-range;
+    }
+    &--range-start {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        background-color: @cell-color-range;
+    }
+    &--range-end {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+        background-color: @cell-color-range;
+    }
+}
