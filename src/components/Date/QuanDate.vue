@@ -3,7 +3,7 @@
     <div class="quan-date__input">{{ inputValue }}</div>
   </div>
   <QuanOverlay ref="overlayRef" :target="dateRef" :in-visible="openPane" @attach-change="onAttachChange">
-    <QuanDatePane :in-date="modelValue"></QuanDatePane>
+    <QuanDatePane :in-date="modelValue" :in-mode="inMode"></QuanDatePane>
   </QuanOverlay>
 </template>
 
@@ -26,7 +26,6 @@ const inputValue = computed(() => {
     return selectedCandayDate.value?.toString(props.inFormat) || '';
 })
 const selectedCandayDate = ref<CandyDate | (CandyDate | null)[] | null>(null);
-const currentMode = ref(props.inMode);
 watch(modelValue, () => {
   updateSelected();
 }, { immediate: true });
