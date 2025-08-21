@@ -28,8 +28,6 @@
 .quan-date-pane {
   display: flex;
   flex-direction: column;
-  width: 300px;
-  height: 300px;
   padding: 10px;
   border-radius: 4px;
   background-color: #e2e2e2;
@@ -43,11 +41,13 @@
   }
 }
 .quan-date-pane-content {
+  padding: 10px;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(6, 1fr);
   gap: 10px;
   .quan-date-pane-cell {
+    cursor: pointer;
     &.month-cell {
     }
     &.year-cell {

@@ -30,6 +30,7 @@ import { CandyDate, WeekList } from "./date.util";
 const props = defineProps<{
   inDate: Date | Nill;
   inMode: "year" | "month" | "week" | "day";
+  inDisabledDate?: (date: Date) => boolean;
 }>();
 const Week = ["一", "二", "三", "四", "五", "六", "日"];
 const emits = defineEmits(["changeMode"]);
@@ -59,6 +60,7 @@ const dayCells = computed(() => {
   return new Array(42).fill(0).map((_, idx) => {
     return {
       day: idx,
+      date: new Date(year, month - 1, idx + 1),
     };
   });
 });

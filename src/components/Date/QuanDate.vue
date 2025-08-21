@@ -3,7 +3,7 @@
     <div class="quan-date__input">{{ inputValue }}</div>
   </div>
   <QuanOverlay ref="overlayRef" :target="dateRef" :in-visible="openPane" @attach-change="onAttachChange">
-    <QuanDatePane :in-date="modelValue" :in-mode="inMode"></QuanDatePane>
+    <QuanDatePane :in-date="modelValue" :in-mode="inMode" :in-disabled-date="inDisabledDate"></QuanDatePane>
   </QuanOverlay>
 </template>
 
