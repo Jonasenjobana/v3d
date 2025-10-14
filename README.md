@@ -69,7 +69,17 @@ Vue语法速查
             update: [e: number]
         }>()
     ```
-
+2. effectScope
+    - 快速清空watch,watchEffect的副作用
+    ```typescript
+    const scope = effectScope.run(() => {
+        watch(...);
+        watchEffect(...);
+        // 或者更深层的cb
+    })
+    // 清除作用域内所有副作用
+    scope.stop();
+    ```
 Vuetify快速入门文档
 1. 布局遵循由外到内的原则， 方向按照左、右、上、下的顺序排列，一般布局组件最内部应该是v-main 他会自动计算剩余空间
 - 从左到右 优先级，如果有空间则按照组件自身规则占据空间 比如v-app-bar会占据剩余容器整个宽度
@@ -94,3 +104,4 @@ Vuetify快速入门文档
 - i和o lottie内部贝塞尔曲线出入参数默认写死 不用处理
 
 线性插值计算关键帧变化量
+

@@ -38,8 +38,8 @@ onMounted(() => {
   setTimeout(() => {
     // testPass();
     // testPartial();
-    // testGlitch();
-    testShader();
+    testGlitch();
+    // testShader();
   }, 1000);
 });
 function testShader() {

@@ -1,5 +1,6 @@
 # ai chat
 1. md解析
+2. eventmessage流数据处理
 # machine learn
 - tensorflow
 # 3d
@@ -12,6 +13,14 @@
 # canvas
 1. 图片编辑器
 2. echart line scale
+
+# DOM结构化 编程
+## THREE结构化 react-three
+## Canvas结构化 参考antd引擎类似
+### 原理
+1. 顶层canvas组件画布 存储three相关注入给子孙节点
+2. 
+
 
 1.自适应方案
 - vuetify 断点
