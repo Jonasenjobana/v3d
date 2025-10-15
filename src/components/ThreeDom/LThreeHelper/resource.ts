@@ -60,15 +60,18 @@ export type LResourceEventName = "progress" | "load" | "load-error";
 // 资源管理
 export class LThreeResource extends LEventEmitter<LResourceEventName> {
   isDestroy: boolean = false;
-  loadingManager: LoadingManager;
+  loadingManager!: LoadingManager;
   sceneResrouce: LSceneResource | undefined;
-  gltfLoader: GLTFLoader;
-  textureLoader: TextureLoader;
-  audioLoader: AudioLoader;
-  hdrLoader: RGBELoader;
-  constructor(lScene: LScene) {
+  gltfLoader!: GLTFLoader;
+  textureLoader!: TextureLoader;
+  audioLoader!: AudioLoader;
+  hdrLoader!: RGBELoader;
+  constructor(public lScene: LScene) {
     super();
-    this.sceneResrouce = LSceneResourceList.find((el) => el.lScene == lScene);
+    this.init();
+  }
+  init(): void {
+    this.sceneResrouce = LSceneResourceList.find((el) => el.lScene == this.lScene);
     console.log("🚀 ~ file: resource.ts:57 ~ LThreeResource ~ constructor ~ sceneResrouce:", this.sceneResrouce);
     this.loadingManager = this.loadingManagerFactory();
     this.gltfLoader = new GLTFLoader(this.loadingManager);
@@ -81,6 +84,9 @@ export class LThreeResource extends LEventEmitter<LResourceEventName> {
   destroy() {
     // 注销 不触发onLoad等事件
     this.isDestroy = true;
+  }
+  protected setEvent(flag: "on" | "off"): void {
+    throw new Error("Method not implemented.");
   }
   loadingManagerFactory() {
     const loadingManager = new LoadingManager();
@@ -101,8 +107,13 @@ export class LThreeResource extends LEventEmitter<LResourceEventName> {
     };
     return loadingManager;
   }
-  loadResource() {
-    if (!this.sceneResrouce) return;
+  async loadResource() {
+    await Promise.resolve();
+    if (!this.sceneResrouce) {
+      // 全缓存完成
+      this.fire("load");
+      return;
+    }
     const resources = this.sceneResrouce.resources;
     let cachedCount: number = 0;
     resources.forEach((res) => {
@@ -141,6 +152,7 @@ export class LThreeResource extends LEventEmitter<LResourceEventName> {
       }
     });
     if (cachedCount == resources.length) {
+      this.fire('progress', cachedCount, resources.length);
       // 全缓存完成
       this.fire("load");
     }

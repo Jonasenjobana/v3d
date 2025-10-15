@@ -1,4 +1,4 @@
-import { inject, type InjectionKey, type Ref, ref, onMounted, reactive, onUnmounted, watch, shallowReactive } from "vue";
+import { inject, provide, type InjectionKey, type Ref, ref, onMounted, reactive, onUnmounted, watch, shallowReactive } from "vue";
 import * as THREE from 'three';
 import { useResizeObserver } from "@/utils/element/event";
 import { LThreeHelper } from "./LThreeHelper/helper";
@@ -14,8 +14,7 @@ export function useLThree(containerRef: Ref<HTMLElement>) {
         logarithmicDepthBuffer: false,
     }))
     const lHelper = shallowReactive(new LThreeHelper(render));
-    inject(TRenderToken, render);
-    inject(TThreeHelperToken, lHelper);
+    provide(TThreeHelperToken, lHelper);
     const DOMViewInfo = reactive<{width: number, height: number, aspect: number, containerEl: HTMLElement | null, canvasEl: HTMLCanvasElement | null}>({
         aspect: 0,
         width: 0,
@@ -33,7 +32,7 @@ export function useLThree(containerRef: Ref<HTMLElement>) {
         updateContainerSize();
     })
     onUnmounted(() => {
-        lHelper.renderStop();
+        lHelper.destroy();
         // 销毁处理
     })
     function updateContainerSize() {
