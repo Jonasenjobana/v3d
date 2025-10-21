@@ -38,6 +38,12 @@ const items: Reactive<IVListItem[]> = reactive([
         // prependIcon: "mdi-video-3d-variant",
         rounded: "xl",
       },
+      {
+        title: "three3",
+        to: "/3D/three3",
+        // prependIcon: "mdi-video-3d-variant",
+        rounded: "xl",
+      },
     ],
     // rounded: "xl"
   },

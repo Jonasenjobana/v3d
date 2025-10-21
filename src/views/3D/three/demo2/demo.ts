@@ -1,19 +1,36 @@
 import { LCamera } from "@/components/ThreeDom/LThreeHelper/camera";
+import { GUIControl } from "@/components/ThreeDom/LThreeHelper/guiHelper";
 import type { LThreeHelper } from "@/components/ThreeDom/LThreeHelper/helper";
 import { MeshSelect } from "@/components/ThreeDom/LThreeHelper/meshSelect";
 import { LSceneResourceList, type ResourceValue } from "@/components/ThreeDom/LThreeHelper/resource";
 import { LScene } from "@/components/ThreeDom/LThreeHelper/scene";
 import * as THREE from "three";
+import { SkeletonUtils } from "three/examples/jsm/Addons.js";
 export class DemoScene extends LScene {
+  ID = "DemoScene";
+  guiHelper: GUIControl
   constructor(helper: LThreeHelper) {
-    super(helper, [new LCamera("camera", { type: "PerspectiveCamera", near: 0.1, far: 1000, fov: 75, aspect: helper.aspect, position: { x: 0, y: 0, z: 2 }, helper: true, gui: true, lookAtPosition: { x: 0, y: 0, z: 0 } })]);
+    super(helper, [new LCamera("camera", { type: "PerspectiveCamera", near: 1, far: 5000, fov: 50, aspect: helper.aspect, position: { x: 0, y: 0, z: 2 }, helper: true, gui: true, lookAtPosition: { x: 0, y: 0, z: 0 } })]);
+    this.guiHelper = new GUIControl(`demo场景1`);
   }
   renderBefore(deltaTime: number, elipse: number): void {
     this.control?.update(deltaTime);
   }
   renderAfter(deltaTime: number, elipse: number): void {
   }
+  sceneChange(current: any, pre: any): void {
+    if (current instanceof DemoScene) {
+      this.guiHelper.folder.show();
+    } else {
+      this.guiHelper.folder.hide();
+    }
+  }
+  setEvent(flag: 'on' | 'off'): void {
+    super.setEvent(flag);
+    this.helper[flag]('scene-change', this.sceneChange, this);
+  }
   init(): void {
+    this.controlType = 'lock-fps';
     super.init();
     const scene = this.scene;
     this.scene.background = new THREE.Color(0x000);
@@ -41,6 +58,20 @@ export class DemoScene extends LScene {
           break;
         case "gltf":
           let v1 = value as ResourceValue<"gltf">;
+          const scene = SkeletonUtils.clone(v1.scene);
+          scene.traverse((child: any) => {
+            // if (child instanceof THREE.Group || (child instanceof THREE.Mesh))
+            if (child.isMesh && child instanceof THREE.Mesh) {
+              child.material.depthTest = true; // 启用深度检测
+              child.material.depthWrite = true; // 启用深度写入（重要！）
+              child.castShadow = true;
+              child.receiveShadow = true;
+            }
+          });
+          if (scene.name == '管道内外') {
+   
+            // this.guiHelper.addControl({ key: 'scene.scale', name: '管道内外缩放', min: 0, max: 2, step: 0.1 }, v1.scene);
+          }
           this.scene.add(v1.scene);
           break;
       }

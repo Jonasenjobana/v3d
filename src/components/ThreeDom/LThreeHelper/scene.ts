@@ -1,10 +1,12 @@
 import { LCamera } from "./camera";
 import * as THREE from "three";
 import type { LResource } from "./resource";
-import { FirstPersonControls, FlyControls, MapControls, OrbitControls } from "three/examples/jsm/Addons.js";
+import { FirstPersonControls, FlyControls, MapControls, OrbitControls, PointerLockControls } from "three/examples/jsm/Addons.js";
 import type { LThreeHelper } from "./helper";
 import { LEventEmitter } from "./event";
-export type LSceneEventName = 'render-tick-before' | 'render-tick-after' | 'scene-change'
+import {MeshSelect, type MeshSelectType} from "./meshSelect"
+import { el } from "vuetify/locale";
+export type LSceneEventName = 'render-tick-before' | 'render-tick-after' | 'scene-change' | 'mesh-select'
 /**
  * 场景构造器
  * 1.场景所需资源
@@ -16,20 +18,24 @@ export type LSceneEventName = 'render-tick-before' | 'render-tick-after' | 'scen
  * 7.相机控制
  * 8.事件选取
  */
-export abstract class LScene<T extends LSceneEventName = LSceneEventName> extends LEventEmitter<T> {
+export abstract class LScene extends LEventEmitter<LSceneEventName> {
+  ID: string = "LScene";
   resources: LResource[] = [];
   scene!: THREE.Scene;
   camera!: LCamera;
   orbitControl: OrbitControls | null = null;
   fpsControl: FirstPersonControls | null = null;
+  lockControl: PointerLockControls | null = null;
   control: THREE.Controls<any> | null = null;
+  meshSelect!: MeshSelect;
+  meshEventMap?: Partial<{[key in MeshSelectType]: (...args: any[]) => void}>
   //   mapControl: MapControls | null = null;
   //   flyControl: FlyControls | null = null;
   constructor(protected helper: LThreeHelper, protected lCameras: LCamera[]) {
     super();
     this.init();
   }
-  controlType: "orbit" | "fps" = "orbit";
+  controlType: "orbit" | "fps" | 'lock-fps' = "orbit";
   controlConfig: { orbit: any; fps: any } = {
     orbit: {
       enableDamping: true,
@@ -48,11 +54,12 @@ export abstract class LScene<T extends LSceneEventName = LSceneEventName> extend
   abstract renderAfter(deltaTime: number, elipse: number): void;
   init(): void {
     this.scene = new THREE.Scene();
+    this.meshSelect = new MeshSelect(this.helper);
     this.lCameras = this.lCameras.map((camera) => {
       this.scene.add(camera.camera);
       return camera;
     });
-    this.on('render-tick-after' as T, this.renderAfter);
+    this.on('render-tick-before', this.renderAfter);
     this.camera = this.lCameras[0];
     this.changeCamera();
     this.setEvent('on');
@@ -70,15 +77,23 @@ export abstract class LScene<T extends LSceneEventName = LSceneEventName> extend
     this.changControl(this.controlType);
   }
   /**控制器切换 */
-  changControl(type: "orbit" | "fps") {
+  changControl(type: "orbit" | "fps" | 'lock-fps') {
     this.controlType = type;
     if (this.control) {
       this.control.enabled = false;
     }
+    if (this.lockControl) {
+      this.lockControl.unlock();
+    }
     if (type == "orbit") {
       this.control = this.orbitControl = this.orbitControl || new OrbitControls(this.camera.camera, this.helper.domElement);
-    } else {
+    } else if (type == 'fps') {
       this.control = this.fpsControl = this.fpsControl || new FirstPersonControls(this.camera.camera, this.helper.domElement);
+    } else {
+      this.control = this.lockControl = this.lockControl || new PointerLockControls(this.camera.camera, this.helper.domElement);
+      this.fpsControl = this.fpsControl || new FirstPersonControls(this.camera.camera, this.helper.domElement);
+      this.fpsControl.activeLook = false;
+      this.lockControl.lock();
     }
     this.control.enabled = true;
   }
@@ -88,9 +103,24 @@ export abstract class LScene<T extends LSceneEventName = LSceneEventName> extend
   remove(...arg: THREE.Object3D[]) {
     return this.scene.remove(...arg);
   }
+  changeScene(current: LScene) {
+    if (current.ID == this.ID) {
+      this.changeCamera();
+    } else {
+      this.destroy();
+    }
+  }
   setEvent(flag: 'on' | 'off') {
-    this.helper[flag]('render-tick-before', this.renderBefore);
-    this.helper[flag]('render-tick-after', this.renderAfter);
+    this.helper[flag]('scene-change', this.changeScene, this);
+    this.helper[flag]('render-tick-before', this.renderBefore, this);
+    this.helper[flag]('render-tick-after', this.renderAfter, this);
+    if (!this.meshEventMap) {
+      this.meshEventMap = {
+        mousemove: (e) => {
+        }
+      };
+    }
+    this.meshSelect[flag]('mousemove', this.meshEventMap.mousemove!);
   }
   destroy(): void {
     this.setEvent('off');

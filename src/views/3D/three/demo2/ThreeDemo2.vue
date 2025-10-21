@@ -29,8 +29,38 @@ registerSceneResource([
     resources: [
       {
         type: "gltf",
-        id: "LittlestTokyo",
-        path: "/3d/LittlestTokyo.glb",
+        id: "厂房",
+        path: "/3d/bnsv/models/bnsw/厂房.glb",
+        value: null,
+      },
+      {
+        type: "gltf",
+        id: "周边其他",
+        path: "/3d/bnsv/models/bnsw/周边其他.glb",
+        value: null,
+      },
+      {
+        type: "gltf",
+        id: "水箱",
+        path: "/3d/bnsv/models/bnsw/水箱.glb",
+        value: null,
+      },
+      {
+        type: "gltf",
+        id: "消除罐",
+        path: "/3d/bnsv/models/bnsw/消除罐.glb",
+        value: null,
+      },
+      {
+        type: "gltf",
+        id: "管道内外",
+        path: "/3d/bnsv/models/bnsw/管道内外.glb",
+        value: null,
+      },
+      {
+        type: "gltf",
+        id: "设备合集",
+        path: "/3d/bnsv/models/bnsw/设备合集.glb",
         value: null,
       },
       {
@@ -51,7 +81,6 @@ lHelper.on("resource-progress", (itemsLoaded: number, itemsTotal: number) => {
   sceneLoading.loading = true;
   sceneLoading.total = itemsTotal;
   sceneLoading.ok = itemsLoaded;
-  console.log(itemsLoaded, itemsTotal);
 });
 lHelper.on("resource-load", () => {
   sceneLoading.loading = false;

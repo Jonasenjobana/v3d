@@ -47,7 +47,6 @@ export class LThreeHelper extends LEventEmitter<LThreeHelperEventName> {
     this.fire('scene-change', lScene, this.lScene);
     this.lThreeResource?.destroy();
     this.lThreeResource = new LThreeResource(lScene);
-    console.log("🚀 ~ file: helper.ts:34 ~ LThreeHelper ~ setScene ~ lThreeResource:", this.lThreeResource)
     this.lThreeResource.on('load', () => {
       lScene?.loadResources();
       this.lScene = lScene;
@@ -55,7 +54,6 @@ export class LThreeHelper extends LEventEmitter<LThreeHelperEventName> {
     });
     this.lThreeResource.on('load-error', () => this.fire('resource-load-error'));
     this.lThreeResource.on('progress', (itemsLoaded: number, itemsTotal: number) => {
-      console.log(itemsLoaded, itemsTotal);
       this.fire('resource-progress', itemsLoaded, itemsTotal)
     });
   }
@@ -99,7 +97,6 @@ export class LThreeHelper extends LEventEmitter<LThreeHelperEventName> {
       this.baseEventMap.mousewheel = (e: MouseEvent) => this.fire('mousewheel', e);
       this.baseEventMap.mousemove = (e: MouseEvent) => this.fire('mousemove', e);
     }
-    console.log("🚀 ~ file: helper.ts:81 ~ LThreeHelper ~ setEvent ~ this.baseEventMap:", this.baseEventMap)
     this.domElement[domEvent]('click', this.baseEventMap.click!);
     this.domElement[domEvent]('dbclick', this.baseEventMap.dbclick!);
     this.domElement[domEvent]('mousedown', this.baseEventMap.mousedown!);

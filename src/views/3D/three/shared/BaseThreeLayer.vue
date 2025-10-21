@@ -6,7 +6,8 @@
         <component :is="Component"></component>
       </router-view> -->
       <!-- <three-demo1 @onTick="TEST"></three-demo1> -->
-       <three-demo2></three-demo2>
+      <!-- <three-demo2></three-demo2> -->
+      <three-demo3></three-demo3>
     </div>
   </div>
 </template>
@@ -19,6 +20,7 @@ import hdr from "@/assets/hdr/Ultimate_Skies_4k_0027.hdr?url";
 import { onMounted, ref } from "vue";
 import * as THREE from "three";
 import { useSlThree } from "@/stores/useThree";
+import ThreeDemo3 from "../demo3/ThreeDemo3.vue";
 const threeCanvas = ref<HTMLCanvasElement>({} as HTMLCanvasElement);
 const slThree = useSlThree(),
   { initThree, slThreeData } = slThree;

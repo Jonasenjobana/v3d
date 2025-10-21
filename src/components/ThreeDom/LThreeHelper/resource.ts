@@ -4,6 +4,7 @@ import { GLTFLoader, type GLTF } from "three/addons/loaders/GLTFLoader.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import { LEventEmitter } from "./event";
 import type { LScene } from "./scene";
+import { SkeletonUtils } from "three/examples/jsm/Addons.js";
 
 // 配置 DRACOLoader 并加载模型
 const dracoLoader = new DRACOLoader();
@@ -91,7 +92,6 @@ export class LThreeResource extends LEventEmitter<LResourceEventName> {
   loadingManagerFactory() {
     const loadingManager = new LoadingManager();
     loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-      console.log(url, itemsLoaded, itemsTotal);
       if (this.isDestroy) return;
       this.fire("progress", itemsLoaded, itemsTotal);
     };
@@ -128,6 +128,7 @@ export class LThreeResource extends LEventEmitter<LResourceEventName> {
           case "gltf":
             this.gltfLoader.load(path, (gltf) => {
               res.value = gltf;
+              res.value.scene.name = id;
               this.handleCached(id) || AllLResource.push(res);
             });
             break;

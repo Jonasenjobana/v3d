@@ -4,10 +4,7 @@ import { MeshSelect, type MeshSelectType } from "@/components/ThreeDom/LThreeHel
 import { LSceneResourceList, type ResourceValue } from "@/components/ThreeDom/LThreeHelper/resource";
 import { LScene, type LSceneEventName } from "@/components/ThreeDom/LThreeHelper/scene";
 import * as THREE from "three";
-export type DemoScene2Event = 'mesh-select' | LSceneEventName ;
-export class DemoScene2<T extends DemoScene2Event = DemoScene2Event> extends LScene<T> {
-  meshSelect!: MeshSelect 
-  meshEventMap?: Partial<{[key in MeshSelectType]: (...args: any[]) => void}>
+export class DemoScene2 extends LScene {
   constructor(helper: LThreeHelper) {
     super(helper, [new LCamera("camera", { type: "PerspectiveCamera", near: 0.1, far: 1000, fov: 75, aspect: helper.aspect, position: { x: 2, y: 4, z: 2 }, helper: true, gui: true, lookAtPosition: { x: 0, y: 0, z: 0 } })]);
   }
@@ -30,7 +27,6 @@ export class DemoScene2<T extends DemoScene2Event = DemoScene2Event> extends LSc
     scene.add(directionalLight);
     this.boxMesh();
     this.loadResources();
-    this.meshSelect = new MeshSelect(this.helper);
   }
   loadResources(): void {
   }
@@ -44,11 +40,4 @@ export class DemoScene2<T extends DemoScene2Event = DemoScene2Event> extends LSc
     this.scene.add(mesh);
   }
   destroy(): void {}
-  setEvent(flag: "on" | "off"): void {
-    super.setEvent(flag);
-    if (!this.meshEventMap) {
-      this.meshEventMap = {};
-    }
-    this.meshSelect[flag]('mousemove', this.meshEventMap.mousemove!);
-  }
 }

@@ -1,7 +1,7 @@
 export type LEventName = string | symbol;
 export abstract class LEventEmitter<T extends LEventName = string> {
   // 事件存储结构: { 事件名: [{回调函数, 是否一次性}, ...] }
-  private events: Record<T, Array<{ cb: Function; once: boolean }>>;
+  private events: Record<T, Array<{ cb: Function; once: boolean, that?: any }>>;
 
   constructor() {
     this.events = Object.create(null); // 初始化空对象存储事件
@@ -17,7 +17,7 @@ export abstract class LEventEmitter<T extends LEventName = string> {
    * @param event 事件名称
    * @param cb 回调函数
    */
-  on(event: T, cb: Function): void {
+  on(event: T, cb: Function, that?: any): void {
     if (typeof cb !== "function") {
       throw new TypeError("回调必须是函数类型");
     }
@@ -27,7 +27,7 @@ export abstract class LEventEmitter<T extends LEventName = string> {
       this.events[event] = [];
     }
 
-    this.events[event].push({ cb, once: false });
+    this.events[event].push({ cb, once: false, that });
   }
 
   /**
@@ -59,7 +59,7 @@ export abstract class LEventEmitter<T extends LEventName = string> {
 
     callbacks.forEach((item) => {
       // 执行回调并绑定上下文
-      item.cb.apply(this, args);
+      item.cb.apply(item.that ?? this, args);
       // 非一次性回调保留
       if (!item.once) {
         remaining.push(item);
@@ -75,7 +75,7 @@ export abstract class LEventEmitter<T extends LEventName = string> {
    * @param event 事件名称
    * @param cb 回调函数
    */
-  once(event: T, cb: Function): void {
+  once(event: T, cb: Function, that?: any): void {
     if (typeof cb !== "function") {
       throw new TypeError("回调必须是函数类型");
     }
@@ -84,7 +84,7 @@ export abstract class LEventEmitter<T extends LEventName = string> {
       this.events[event] = [];
     }
 
-    this.events[event].push({ cb, once: true });
+    this.events[event].push({ cb, once: true, that });
   }
 
   /**

@@ -29,6 +29,11 @@ const router = createRouter({
           name: "three2",
           component: () => import("@/views/3D/three/demo2/ThreeDemo2.vue"),
         },
+        {
+          path: "three3",
+          name: "three3",
+          component: () => import("@/views/3D/three/demo3/ThreeDemo3.vue"),
+        },
       ],
     },
     {
