@@ -5,6 +5,7 @@ import { L3Resource, type L3ResourceContent } from "./L3Resource";
 type L3SceneTypeName = "renderer-change";
 export abstract class L3Scene extends L3Component {
   resourceManage: L3Resource;
+  parent: L3Renderer | null = null;
   scene: Scene;
   camera: Camera;
   constructor(name: string | symbol) {

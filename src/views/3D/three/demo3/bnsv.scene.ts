@@ -1,7 +1,8 @@
 import type { L3Renderer } from "@/components/LThreeLib/L3Renderer";
 import type { L3ResourceContent } from "@/components/LThreeLib/L3Resource";
 import { L3Scene } from "@/components/LThreeLib/L3Scene";
-import { AmbientLight, AxesHelper, BoxGeometry, Color, DirectionalLight, EquirectangularReflectionMapping, Mesh, MeshBasicMaterial, PerspectiveCamera, Texture } from "three";
+import { L3Gui } from "@/components/LThreeLib/Tool/L3Gui";
+import { AmbientLight, AxesHelper, BoxGeometry, Color, DirectionalLight, EquirectangularReflectionMapping, Mesh, MeshBasicMaterial, MeshPhysicalMaterial, Object3D, PerspectiveCamera, SpotLight, SpotLightHelper, Texture } from "three";
 import { OrbitControls, type GLTF } from "three/examples/jsm/Addons.js";
 
 export class BNSVScene extends L3Scene {
@@ -27,6 +28,22 @@ export class BNSVScene extends L3Scene {
       { scene } = value!;
     switch (name) {
       case "厂房":
+        scene.traverse((child: Object3D) => {
+          if (child instanceof Mesh) {
+            if (child.name == "4厂区地板") {
+              child.castShadow = true;
+            }
+          }
+        })
+        // L3Gui.on(scene, "厂房", [
+        //   { name: 'position.x', param: 'position.x', ifNums: [,, 0.1] },
+        //   { name: 'position.y', param: 'position.y', ifNums: [,, 0.1] },
+        //   { name: 'position.z', param: 'position.z', ifNums: [,, 0.1] },
+        // ])
+        scene.position.y = -3;
+        scene.receiveShadow = true;
+        console.log("🚀 ~ file: bnsv.scene.ts:38 ~ BNSVScene ~ onModelLoaded ~ scene:", scene)
+        
         this.scene.add(scene);
         break;
     }
@@ -51,18 +68,34 @@ export class BNSVScene extends L3Scene {
       { clientWidth, clientHeight } = domElement;
     this.camera = new PerspectiveCamera(50, clientWidth / clientHeight, 0.1, 1000);
     this.camera.position.set(0, 1, 1);
+    L3Gui.on(this.camera, '厂区主摄像头', [
+      { name: 'position.x', param: 'position.x', ifNums: [,, 0.1] },
+      { name: 'position.y', param: 'position.y', ifNums: [,, 0.1] },
+      { name: 'position.z', param: 'position.z', ifNums: [,, 0.1] },
+    ])
     this.orbit = new OrbitControls(this.camera, domElement);
   }
   protected onBeforeUpdate(delta: number): void {
-    console.log("🚀 ~ file: bnsv.scene.ts:52 ~ BNSVScene ~ onBeforeUpdate ~ delta:", delta)
     this.orbit?.update(delta);
   }
   protected onAfterUpdate(delta: number): void {}
   box() {
     const { scene } = this;
+    const spotLight = new SpotLight(0xffffff);
+    const spotLightHelper = new SpotLightHelper(spotLight)
+    spotLight.intensity = 8.1
+    spotLightHelper.position.set(0,-.2,-2.1);
+    this.scene.add(spotLight, spotLightHelper);
+    L3Gui.on(spotLight, '聚光灯', [
+      { name: 'position.x', param: 'position.x', ifNums: [,, 0.1] },
+      { name: 'position.y', param: 'position.y', ifNums: [,, 0.1] },
+      { name: 'position.z', param: 'position.z', ifNums: [,, 0.1] },
+      { name: 'intensity', param: 'intensity', ifNums: [,, 0.1] },
+    ])
     const geometry = new BoxGeometry(1, 1, 1);
-    const material = new MeshBasicMaterial({ color: 0x00ff00 });
+    const material = new MeshPhysicalMaterial({ color: 0x00ff00 });
     const cube = new Mesh(geometry, material);
+    cube.castShadow = true;
     scene.add(cube);
   }
 }

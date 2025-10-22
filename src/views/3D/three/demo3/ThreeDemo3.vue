@@ -19,9 +19,15 @@ onMounted(() => {
       path: "/3d/bnsv/models/bnsw/厂房.glb",
     },
     {
+      type: "gltf",
+      name: "管道内外",
+      path: "/3d/bnsv/models/bnsw/管道内外.glb",
+      value: null,
+    },
+    {
       type: "hdr",
       name: "venice_sunset_1k",
-      path: "/3d/venice_sunset_1k.hdr",
+      path: "/3d/bnsv/hdr/Ultimate_Skies_4k_0027.hdr",
     },
   ]);
   render.loadScenes(bnsvScene).setScene();

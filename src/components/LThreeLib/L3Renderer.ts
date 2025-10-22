@@ -20,6 +20,7 @@ export class L3Renderer extends L3Component<L3RendererEvent> {
       alpha: true,
       logarithmicDepthBuffer: false,
     });
+    this.render.shadowMap.enabled = true;
     container.appendChild(this.render.domElement); // this.render.domElement
     this.resize();
     this.timer = new Timer();
@@ -41,8 +42,7 @@ export class L3Renderer extends L3Component<L3RendererEvent> {
     cancelAnimationFrame(this.renderFlag);
   }
   private renderLoop(timeStamp?: number) {
-    console.log("renderLoop");
-    // 限制帧数
+    // TODO 限制帧数
     const { frameDiff } = L3Renderer.global;
     const l3scene = this.sceneManage.currentScene;
     this.timer.update(timeStamp);
