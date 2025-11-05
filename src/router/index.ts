@@ -7,6 +7,7 @@ import EchartPlayground from "@/views/EchartPlayground.vue";
 import LoginRoute from "./login.route";
 import MobileRoute from "./mobile.route";
 import CssRoute from "./css.route";
+import Heatmap from "@/views/Canvas/heatmap.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   linkActiveClass: "wtf",
@@ -54,7 +55,7 @@ const router = createRouter({
     {
       path: "/canvas",
       name: "canvas",
-      component: CanvasPlayground,
+      component: Heatmap,
     },
     {
       path: "/map",

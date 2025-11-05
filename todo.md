@@ -6,14 +6,19 @@
 # 3d
 1. three.js
 2. babylon.js
-// delete # map
-// delete 1. 标绘基础功能
-// delete 2. 图层基础功能
 # node
 # canvas
 1. 图片编辑器
 2. echart line scale
-
+3. 频谱图、热力图
+    - 热力图 [x, y, weight]
+        1. createRadialGradient 绘制中心发散的渐变半径作为纹理
+        2. createLinearGradient 绘制连续的颜色深度纹理
+        3. 根据weight权重设置渲染透明度使用创建的中心发散半径纹理
+        4. 获取到的alpha通道纹理 根据透明度权重 获取深度纹理所在坐标 涂上颜色
+    - 频谱图定义了值与rgba的关系 每个采集点使用线性插值渐变过渡值
+4. 粒子图
+    - 双向线性插值法
 # DOM结构化 编程
 ## THREE结构化 react-three
 ## Canvas结构化 参考antd引擎类似
