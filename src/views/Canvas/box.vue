@@ -36,17 +36,12 @@ onMounted(async () => {
   const brush = new CanvasBrush(el);
   let count = 0;
   ticks.anime(() => {
+    console.log('==')
     count++;
-    brush
-      .clearRect().draw(() => {
-        // brush.save();
-        brush.clip([[50, 50], [50, 200], [200, 200], [200, 50], [50, 50]]);
-        brush.drawImage('image/icon/sprite.png', [50, 50], [1000, 50]);
-        brush
-        .clearRect()
-        // brush.restore();
-        brush.drawPolygon(polygon, true);
-      })
+    brush.clearRect().draw(() => {
+      brush.drawImage("image/icon/sprite.png", [50, 50], [24, 24], [1534, 0], [24, 24]);
+      brush.drawPolygon(polygon, true);
+    });
   });
   const box = createABBoxFactory(polygon);
   let ifClick = false;

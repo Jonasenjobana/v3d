@@ -62,7 +62,14 @@ export class ABBox {
   maxX: number = -1;
   maxY: number = -1;
   data?: any;
-  constructor() {}
+  isInit: boolean;
+  constructor(data?: any) {
+    this.data = data;
+    this.isInit = true;
+  }
+  get rbush() {
+    return { minX: this.minX, minY: this.minY, maxX: this.maxX, maxY: this.maxY, data: this.data };
+  }
   updateRbush(rbush?: { minX: number; minY: number; maxX: number; maxY: number; data?: any }) {
     const { minX, minY, maxX, maxY, data } = rbush || { minX: this.minX, minY: this.minY, maxX: this.maxX, maxY: this.maxY, data: this.data };
     this.minX = minX;
@@ -74,6 +81,8 @@ export class ABBox {
     this.x = maxX - this.width / 2;
     this.y = maxY - this.height / 2;
     this.data = data;
+    this.isInit = false;
+    return this;
   }
   /**合并多个aabb */
   mergeABBox(abox: ABBox[] | ABBox) {
@@ -85,12 +94,21 @@ export class ABBox {
       this.updateRbush();
     };
     if (abox instanceof Array) {
+      if (this.isInit) {
+        this.updateRbush(abox[0].rbush);
+      }
       abox.forEach(compare);
     } else {
+      if (this.isInit) {
+        this.updateRbush(abox.rbush);
+      }
       compare(abox);
     }
   }
   hitBox(x: number, y: number, hitRange: number = 0) {
     return x >= this.minX - hitRange && x <= this.maxX + hitRange && y >= this.minY - hitRange && y <= this.maxY + hitRange;
+  }
+  clone() {
+    return new ABBox().updateRbush(this.rbush);
   }
 }

@@ -165,7 +165,7 @@ export class CanvasBrush {
         resolve(this);
       } else {
         if (dpoint && dsize) {
-          this.ctx.drawImage(img, point[0], point[1], size[0], size[1], dpoint[0], dpoint[1], dsize[0], dsize[1]);
+          this.ctx.drawImage(img, dpoint[0], dpoint[1], dsize[0], dsize[1], point[0], point[1], size[0], size[1]);
         } else {
           this.ctx.drawImage(img, point[0], point[1], size[0], size[1]);
         }

@@ -65,8 +65,7 @@ export class ABBoxRenderItem<T extends string = string> extends EventDispatch<T>
   type!: "circle" | "rect" | "line" | "polygon" | "image" | string;
   style?: ABBoxElementStyle;
   visible: boolean = true;
-  /**可能由多个abbox组成 */
-  abboxs: ABBox[] = [];
+  abbox!: ABBox;
   render() {
     
   }
