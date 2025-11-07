@@ -19,6 +19,16 @@
     - 频谱图定义了值与rgba的关系 每个采集点使用线性插值渐变过渡值
 4. 粒子图
     - 双向线性插值法
+# map
+## 渲染结构
+- 参考echart层级结构（轴、grid、series、tooltip、markpoint）各自分层 内部管理自定义元素层级
+1. 公共图层
+    1. 
+2. 自定义图层 
+    - 继承L.Layer
+        1. 一个图层一个canvas
+3. 绘制工具（绘制工具）自带事件
+    - zrender
 # DOM结构化 编程
 ## THREE结构化 react-three
 ## Canvas结构化 参考antd引擎类似

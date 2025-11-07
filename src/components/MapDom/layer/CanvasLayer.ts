@@ -10,6 +10,7 @@ export class CanvasLayer extends L.Layer {
     this.ctx = this.canvas.getContext("2d")!;
   }
   onAdd(map: L.Map): this {
+    super.onAdd(map);
     this.map = map;
     this.initCanvas();
     this.addLeafletEvent(true);

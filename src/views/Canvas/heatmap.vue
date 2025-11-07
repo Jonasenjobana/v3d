@@ -13,7 +13,12 @@ let ctx: CanvasRenderingContext2D | null = null;
 let datas: number[][] = [];
 let config = {
   radius: 20,
-  colors: ["#f00", "#0cff00", "#f6ff00", "#4343bd"].reverse(),
+  colors: [
+    ["#f00", 1],
+    ["#0cff00", .7],
+    ["#f6ff00", 0.2],
+    ["#4343bd", 0],
+  ].reverse(),
 };
 function randomHeatData() {
   const data = [];
@@ -33,12 +38,12 @@ onMounted(() => {
   el.height = height;
   ctx = el.getContext("2d", { willReadFrequently: true });
   datas = [
-    [10, 10, 30],
+    [10, 10, 100],
     [20, 20, 50],
     [10, 20, 70],
     [35, 35, 100],
   ];
-  // datas = randomHeatData();
+  datas = randomHeatData();
   shadowTexture = drawShadowTexture();
   gradientDatas = gradientTextureData();
   draw();
@@ -80,7 +85,7 @@ function gradientTextureData() {
   const ctx = canvas.getContext("2d");
   (canvas.width = 256), (canvas.height = 1);
   const gradient = ctx!.createLinearGradient(0, 0, 256, 0);
-  colors.forEach((color, index) => gradient.addColorStop(index / colors.length, color));
+  colors.forEach((color, index) => gradient.addColorStop(color[1] as number, color[0] as string));
   ctx!.fillStyle = gradient;
   ctx!.fillRect(0, 0, 256, 1);
   return ctx!.getImageData(0, 0, 256, 1).data;

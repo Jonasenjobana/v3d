@@ -92,6 +92,9 @@ importers:
       zqdemo:
         specifier: link:../../lib-tool/zz
         version: link:../../lib-tool/zz
+      zrender:
+        specifier: ^6.0.0
+        version: 6.0.0
     devDependencies:
       '@mdi/font':
         specifier: ^7.4.47
@@ -1782,8 +1785,8 @@ packages:
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
 
-  webworkify-webpack@git+https://git@github.com:xqq/webworkify-webpack.git#24d1e719b4a6cac37a518b2bb10fe124527ef4ef:
-    resolution: {commit: 24d1e719b4a6cac37a518b2bb10fe124527ef4ef, repo: git@github.com:xqq/webworkify-webpack.git, type: git}
+  webworkify-webpack@https://codeload.github.com/xqq/webworkify-webpack/tar.gz/24d1e719b4a6cac37a518b2bb10fe124527ef4ef:
+    resolution: {tarball: https://codeload.github.com/xqq/webworkify-webpack/tar.gz/24d1e719b4a6cac37a518b2bb10fe124527ef4ef}
     version: 2.1.5
 
   whatwg-url@5.0.0:
@@ -1824,6 +1827,9 @@ packages:
 
   zrender@5.6.1:
     resolution: {integrity: sha512-OFXkDJKcrlx5su2XbzJvj/34Q3m6PvyCZkVPHGYpcCJ52ek4U/ymZyfuV1nKE23AyBJ51E/6Yr0mhZ7xGTO4ag==}
+
+  zrender@6.0.0:
+    resolution: {integrity: sha512-41dFXEEXuJpNecuUQq6JlbybmnHaqqpGlbH1yxnA5V9MMP4SbohSVZsJIwz+zdjQXSSlR1Vc34EgH1zxyTDvhg==}
 
 snapshots:
 
@@ -3036,7 +3042,7 @@ snapshots:
   mpegts.js@1.8.0:
     dependencies:
       es6-promise: 4.2.8
-      webworkify-webpack: git+https://git@github.com:xqq/webworkify-webpack.git#24d1e719b4a6cac37a518b2bb10fe124527ef4ef
+      webworkify-webpack: https://codeload.github.com/xqq/webworkify-webpack/tar.gz/24d1e719b4a6cac37a518b2bb10fe124527ef4ef
 
   mrmime@2.0.1: {}
 
@@ -3420,7 +3426,7 @@ snapshots:
 
   webidl-conversions@3.0.1: {}
 
-  webworkify-webpack@git+https://git@github.com:xqq/webworkify-webpack.git#24d1e719b4a6cac37a518b2bb10fe124527ef4ef: {}
+  webworkify-webpack@https://codeload.github.com/xqq/webworkify-webpack/tar.gz/24d1e719b4a6cac37a518b2bb10fe124527ef4ef: {}
 
   whatwg-url@5.0.0:
     dependencies:
@@ -3460,5 +3466,9 @@ snapshots:
   yoctocolors@2.1.1: {}
 
   zrender@5.6.1:
+    dependencies:
+      tslib: 2.3.0
+
+  zrender@6.0.0:
     dependencies:
       tslib: 2.3.0

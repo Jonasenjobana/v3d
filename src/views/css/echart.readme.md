@@ -33,5 +33,20 @@
 ### 配置
 1. 数据映射
     1. dataset 数据集
+        - 多数据集 传入source: {[...]}[]
+        - 单数据集 传入source
+            1. 写法
+                ```typescript
+                // series如果指定了seriesLayoutBy: 'row' | 'column'
+                    dataset: {
+                        source: [
+                            ['product', '2015', '2016']
+                            ['X-Man', 12, 13],
+                            ['Banana', 0.3, .1],
+                            ['Kindom', 3, 2.1]
+                        ]
+                    }
+                ```
+            
     2. series.encode 映射
     3. series.dimensions 维度名 (tooltip)
