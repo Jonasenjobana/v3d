@@ -1,8 +1,9 @@
-import { ABBox } from "./box";
-import type { CanvasGroup } from "./group";
-
 /**
- * 画布脏检测更新
+ * 脏矩形
+ * 元素更新标记脏
+ * group标记
+ * 触发渲染器更新 更新周期内只执行一次
+ * 视图口位置、缩放、
+ * 1.获取每个group的脏矩形 判断视图和脏矩形位置 大于则渲染视图内部元素
+ * 2.大量元素过滤 根据hitBox过滤视图以外的
  */
-export class CanvasDirty {
-}
