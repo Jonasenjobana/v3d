@@ -65,7 +65,12 @@ export class CanvasGroup extends EventDisplayObject {
     this.rbushIns.load(this.children.map((child) => child.hitBox.rbush));
   }
   update() {
-    [...this.children].sort((a, b) => b.z - a.z).forEach((el) => el.update(this.brush));
+    [...this.children].sort((a, b) => b.z - a.z).filter(el => el.dirty).forEach((el) => {
+      el.update(this.brush);
+    });
+  }
+  isOutOffView() {
+    
   }
   onRemove() {
     this.render?.event.off("render", this.update);
@@ -79,4 +84,5 @@ export class CanvasGroup extends EventDisplayObject {
       this.treeFire(type, { point: { x: event.offsetX, y: event.offsetY } });
     }
   }
+  
 }

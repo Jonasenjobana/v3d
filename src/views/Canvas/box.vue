@@ -33,10 +33,10 @@ onMounted(async () => {
   const group = new CanvasGroup();
   render.add(group);
 
-  new Array(5).fill(0).map(() => {
+  new Array(120000).fill(0).map(() => {
     const circle = new ZCircle({
-      x: Math.random() * 1920,
-      y: Math.random() * 1000,
+      x: Math.random() * 6000,
+      y: Math.random() * 6000,
       radius: 2,
       style: { strokeColor: "red", weight: 2 },
     });

@@ -8,7 +8,7 @@ export abstract class ZElementBase extends EventDisplayObject implements ZCanvas
   abstract hitBoxUpdate(): void;
   z: number = 0;
   defaultStyle: Partial<ZCanvas.ZElementStyle> = { strokeColor: "black", weight: 2, fillColor: undefined };
-  dirty: boolean = false;
+  dirty: boolean = true;
   prevABBox: ABBox | null = null;
   get dirtyBox() {
     if (!this.prevABBox) {
@@ -53,6 +53,7 @@ export class ZCircle extends ZElementBase {
     brush.setBrushOption({ strokeColor, weight }, () => {
       brush.drawCircle([this.x, this.y], this.radius);
     });
+    // this.dirty = false;
   }
   hitBoxUpdate() {
     this.hitBox.updateRadius([this.x, this.y], this.radius);

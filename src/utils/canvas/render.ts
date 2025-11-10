@@ -43,12 +43,17 @@ export class CanvasRender {
     this.tick = new AnimeTick();
     this.tick.event.on("tick", () => {
       if (this.isDirty) {
-        this.update();
+        this.dirty();
       }
       this.event.fire("tick");
     });
+    let t: any = null;
     canvas.addEventListener("mousemove", (e) => {
-      this.eventDispatch("mousemove", e);
+      if (t) return;
+      t = setTimeout(() => {
+        t = null;
+        this.eventDispatch("mousemove", e);
+      }, 50);
     });
     canvas.addEventListener("mousedown", (e) => {
       this.eventDispatch("mousedown", e);
@@ -73,23 +78,24 @@ export class CanvasRender {
   }
   protected update() {
     this.isDirty = false;
-    cancelAnimationFrame(this.renderTask);
-    this.renderTask = requestAnimationFrame(() => {
-      const {minX, minY, maxX, maxY} = this.renderClipBox;
-      this.brush.clearRect(minX, minY, maxX - minX, maxY - minY);
-      this.brush.clip([[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]], () => {
-        this.brush.drawRect([minX, minY], maxX - minX, maxY - minY);
-        this.groupSortList.forEach((group) => {
-          group.update();
-        });
+    const {minX, minY, maxX, maxY} = this.renderClipBox;
+    this.brush.clearRect(minX, minY, maxX - minX, maxY - minY);
+    this.brush.clip([[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]], () => {
+      this.brush.setBrushOption({ strokeColor: ['red', 'green', 'blue'][Math.floor(Math.random() * 3)]}, () => {
+        this.brush.drawRect([minX, minY], maxX - minX, maxY - minY)
       })
-    });
+      this.groupSortList.forEach((group) => {
+        group.update();
+      });
+    })
   }
   dirty() {
-    this.isDirty = true;
-    this.updateRBush();
-    this.updateDirtyGroup();
-    this.update();
+    cancelAnimationFrame(this.renderTask);
+    this.renderTask = requestAnimationFrame(() => {
+      this.updateRBush();
+      this.updateDirtyGroup();
+      this.update();
+    });
   }
   updateDirtyGroup() {
     const dirtyABBox = new ABBox();
