@@ -1,3 +1,4 @@
+import { ABBox } from "./box";
 import { CanvasBrush } from "./brush";
 import { EventDispatch } from "./event";
 import { CanvasGroup } from "./group";
@@ -10,13 +11,34 @@ export type RenderEvent = "tick" | "render" | BaseEvent | `call_${BaseEvent}`;
 export class CanvasRender {
   brush: CanvasBrush;
   tick: AnimeTick;
-  event: EventDispatch<RenderEvent> = new EventDispatch();
+  event: EventDispatch<RenderEvent, { tick: void; click: MouseEvent; mousedown: MouseEvent; mouseup: MouseEvent; mousemove: MouseEvent }> = new EventDispatch();
   isDirty: boolean = false;
   renderTask: number = 0;
   defaultGroup: CanvasGroup = new CanvasGroup();
   rbushIns: rbush<{ data: CanvasGroup }> = new rbush();
   groupList: CanvasGroup[] = [];
+  /**边界 */
+  boundRect: { x: number; y: number; width: number; height: number } = { x: 0, y: 0, width: 0, height: 0 };
+  dirtyAbbox?: ABBox
+  /**裁剪 */
+  get renderClipBox(): { minX: number; minY: number; maxX: number; maxY: number } {
+    const { width, height } = this.boundRect;
+    const {minX, minY, maxX, maxY} = this.dirtyAbbox || new ABBox();
+    return {
+      minX: minX < 0 ? 0 : Math.min(minX, width),
+      minY: minY < 0 ? 0 : Math.min(minY, height),
+      maxX: maxX > width ? width : Math.max(maxX, 0),
+      maxY: maxY > height ? height : Math.max(maxY, 0),
+    }
+  }
+  get groupSortList() {
+    return this.groupList.sort((a, b) => b.zlevel - a.zlevel);
+  }
   constructor(canvas: HTMLCanvasElement) {
+    const { width, height } = canvas.getBoundingClientRect();
+    canvas.width = width;
+    canvas.height = height;
+    this.boundRect = { x: 0, y: 0, width, height };
     this.brush = new CanvasBrush(canvas);
     this.tick = new AnimeTick();
     this.tick.event.on("tick", () => {
@@ -26,50 +48,78 @@ export class CanvasRender {
       this.event.fire("tick");
     });
     canvas.addEventListener("mousemove", (e) => {
-      this.mouseEventDispatch("mousemove", e);
+      this.eventDispatch("mousemove", e);
+    });
+    canvas.addEventListener("mousedown", (e) => {
+      this.eventDispatch("mousedown", e);
+    });
+    canvas.addEventListener("mouseup", (e) => {
+      this.eventDispatch("mouseup", e);
     });
     canvas.addEventListener("click", (e) => {
-      this.mouseEventDispatch("click", e);
+      this.eventDispatch("click", e);
     });
   }
-  mouseEventDispatch(event: BaseEvent, e: MouseEvent) {
+  /**
+   * 更新鼠标状态
+   */
+  updateCursor() {}
+  eventDispatch(event: BaseEvent, e: MouseEvent) {
     const { offsetX, offsetY } = e;
     this.rbushIns.search({ minX: offsetX, minY: offsetY, maxX: offsetX, maxY: offsetY }).filter((rbush) => {
-      rbush.data.event.fire(`call_${event}`, e);
+      const { data } = rbush;
+      data.fire("event_tree", { type: event, point: { x: offsetX, y: offsetY } });
     });
   }
   protected update() {
     this.isDirty = false;
     cancelAnimationFrame(this.renderTask);
     this.renderTask = requestAnimationFrame(() => {
-      this.event.fire("render");
+      const {minX, minY, maxX, maxY} = this.renderClipBox;
+      this.brush.clearRect(minX, minY, maxX - minX, maxY - minY);
+      this.brush.clip([[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]], () => {
+        this.brush.drawRect([minX, minY], maxX - minX, maxY - minY);
+        this.groupSortList.forEach((group) => {
+          group.update();
+        });
+      })
     });
   }
   dirty() {
     this.isDirty = true;
+    this.updateRBush();
+    this.updateDirtyGroup();
     this.update();
+  }
+  updateDirtyGroup() {
+    const dirtyABBox = new ABBox();
+    const rectBox = this.groupSortList.map((group) => {
+      return group.getDirtyRect();
+    });
+    dirtyABBox.mergeABBox(rectBox);
+    this.dirtyAbbox = dirtyABBox;
   }
   add(group: CanvasGroup) {
     if (this.groupList.indexOf(group) === -1) {
       group.render = this;
       group.onAdd();
-      this.rbushIns.insert(group.abBox.rbush);
+      this.rbushIns.insert(group.hitBox.rbush);
       this.groupList.push(group);
-      this.isDirty = true;
+      this.dirty();
     }
   }
   remove(group: CanvasGroup) {
     const index = this.groupList.indexOf(group);
     if (index !== -1) {
-      this.rbushIns.remove(group.abBox.rbush);
+      this.rbushIns.remove(group.hitBox.rbush);
       group.onRemove();
       group.render = null;
       this.groupList.splice(index, 1);
-      this.isDirty = true;
+      this.dirty();
     }
   }
   updateRBush() {
     this.rbushIns.clear();
-    this.rbushIns.load(this.groupList.map((group) => group.abBox.rbush));
+    this.rbushIns.load(this.groupList.map((group) => group.hitBox.rbush));
   }
 }

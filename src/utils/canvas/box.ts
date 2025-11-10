@@ -1,6 +1,12 @@
 /**
  * rbush筛选后再进行射线法判断
  */
+// 圆形边界内部
+export function insideCircle(point: [number, number], circle: [number, number], radius: number): boolean {
+  const [px, py] = point;
+  const [cx, cy] = circle;
+  return (px - cx) * (px - cx) + (py - cy) * (py - cy) <= radius * radius;
+}
 // 辅助函数：判断点是否在线段上
 export function isPointOnSegment(p: [number, number], a: [number, number], b: [number, number]): boolean {
   const [px, py] = p;
@@ -62,13 +68,37 @@ export class ABBox {
   maxX: number = -1;
   maxY: number = -1;
   data?: any;
-  isInit: boolean;
+  isEmpty: boolean;
+  /**碰撞盒子 多边形 */
+  boxPolygon: [number, number][] = [];
+  /**碰撞盒子 圆形*/
+  radius: number = -1;
   constructor(data?: any) {
     this.data = data;
-    this.isInit = true;
+    this.isEmpty = true;
+    this.setEmpty();
   }
   get rbush() {
     return { minX: this.minX, minY: this.minY, maxX: this.maxX, maxY: this.maxY, data: this.data };
+  }
+  setEmpty() {
+    this.minX = Infinity;
+    this.minY = Infinity;
+    this.maxX = -Infinity;
+    this.maxY = -Infinity;
+    this.isEmpty = true;
+  }
+  updatePolygon(polygon: [number, number][]) {
+    this.boxPolygon = polygon;
+    const { rbush } = createABBoxFactory(polygon);
+    this.updateRbush(rbush);
+    this.radius = -1;
+  }
+  updateRadius(center: [number, number], radius: number) {
+    this.radius = radius;
+    const { rbush } = createABBoxFactory(center, radius);
+    this.updateRbush({...rbush, data: this.data});
+    this.boxPolygon = [];
   }
   updateRbush(rbush?: { minX: number; minY: number; maxX: number; maxY: number; data?: any }) {
     const { minX, minY, maxX, maxY, data } = rbush || { minX: this.minX, minY: this.minY, maxX: this.maxX, maxY: this.maxY, data: this.data };
@@ -81,7 +111,7 @@ export class ABBox {
     this.x = maxX - this.width / 2;
     this.y = maxY - this.height / 2;
     this.data = data;
-    this.isInit = false;
+    this.isEmpty = false;
     return this;
   }
   /**合并多个aabb */
@@ -94,19 +124,21 @@ export class ABBox {
       this.updateRbush();
     };
     if (abox instanceof Array) {
-      if (this.isInit) {
-        this.updateRbush(abox[0].rbush);
-      }
       abox.forEach(compare);
     } else {
-      if (this.isInit) {
-        this.updateRbush(abox.rbush);
-      }
       compare(abox);
     }
+    return this;
   }
-  hitBox(x: number, y: number, hitRange: number = 0) {
-    return x >= this.minX - hitRange && x <= this.maxX + hitRange && y >= this.minY - hitRange && y <= this.maxY + hitRange;
+  isHit(x: number, y: number, hitRange: number = 0) {
+    const baseHit = x >= this.minX - hitRange && x <= this.maxX + hitRange && y >= this.minY - hitRange && y <= this.maxY + hitRange;
+    if (baseHit && this.boxPolygon.length > 0) {
+      return insidePolygon([x, y], this.boxPolygon);
+    } else if (baseHit && this.radius > 0) {
+      return insideCircle([x, y], [this.x, this.y], this.radius);
+    } else {
+      return baseHit;
+    }
   }
   clone() {
     return new ABBox().updateRbush(this.rbush);

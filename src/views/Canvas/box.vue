@@ -10,6 +10,9 @@ import { createABBoxFactory, insidePolygon } from "@/utils/canvas/box";
 import { onMounted, ref } from "vue";
 import { CanvasBrush } from "@/utils/canvas/brush";
 import { scaleTemplatePath } from "@/utils/canvas/common/common";
+import { CanvasRender } from "@/utils/canvas/render";
+import { CanvasGroup } from "@/utils/canvas/group";
+import { ZCircle, ZElementBase } from "@/utils/canvas/element";
 // detail edit 0 | 1  copy cancel default 0 1 2
 const canvasRef = ref();
 let ctx!: CanvasRenderingContext2D;
@@ -23,49 +26,35 @@ const templatePoints: [number, number][] = [
 ];
 
 const a = scaleTemplatePath([200, 520], [100, 100], 180, templatePoints);
-console.log("🚀 ~ file: box.vue:43 ~ onMounted ~ a:", a);
 const polygon: [number, number][] = a;
 onMounted(async () => {
   const el = canvasRef.value as HTMLCanvasElement;
-  const { width, height } = el.getBoundingClientRect();
-  const ticks = new AnimeTick();
-  ticks.start();
-  el.width = width;
-  el.height = height;
-  ctx = el.getContext("2d")!;
-  const brush = new CanvasBrush(el);
-  let count = 0;
-  ticks.anime(() => {
-    console.log('==')
-    count++;
-    brush.clearRect().draw(() => {
-      brush.drawImage("image/icon/sprite.png", [50, 50], [24, 24], [1534, 0], [24, 24]);
-      brush.drawPolygon(polygon, true);
+  const render = new CanvasRender(el);
+  const group = new CanvasGroup();
+  render.add(group);
+
+  new Array(5).fill(0).map(() => {
+    const circle = new ZCircle({
+      x: Math.random() * 1920,
+      y: Math.random() * 1000,
+      radius: 2,
+      style: { strokeColor: "red", weight: 2 },
     });
+    group.add(circle);
   });
-  const box = createABBoxFactory(polygon);
-  let ifClick = false;
-  document.body.addEventListener("mousemove", (e: MouseEvent) => {
-    const { offsetX: x, offsetY: y, movementX, movementY } = e;
-    if ((box.hitBox(x, y) && insidePolygon([x, y], polygon)) || ifClick) {
-      el.style.cursor = "pointer";
-      if (ifClick) {
-        const matrix = new DOMMatrix(getComputedStyle(el).transform);
-        let m = matrix.translate(movementX, movementY);
-        el.style.transform = m.toString();
-        // el.style.transform = CO
-      }
-    } else {
-      el.style.cursor = "default";
+  render.dirty();
+  group.on("mousemove", (e: any) => {
+    e.children.forEach((el: ZElementBase) => {
+      el.attr('style.strokeColor', 'green');
+      el.attr('radius', Math.random() * 20 + 5);
+    });
+    render.dirty();
+    // const a = group.getDirtyRect();
+    if (a) {
+      // 脏矩形算法测试
+      // const { x, y, width, height } = a;
+      // render.brush.drawRect([x - width / 2, y - height / 2], width, height);
     }
-  });
-  el.addEventListener("mousedown", () => {
-    ifClick = true;
-    ticks.stop();
-  });
-  el.addEventListener("mouseup", () => {
-    ifClick = false;
-    ticks.start();
   });
 });
 </script>

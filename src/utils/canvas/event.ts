@@ -1,4 +1,4 @@
-export class EventDispatch<T extends string> {
+export class EventDispatch<T extends string, E extends Record<string, any>> {
   // 事件存储结构: { 事件名: [{回调函数, 是否一次性}, ...] }
   private events: Record<T, Array<{ cb: Function; once: boolean; that?: any }>>;
 
@@ -10,7 +10,7 @@ export class EventDispatch<T extends string> {
    * @param event 事件名称
    * @param cb 回调函数
    */
-  on(event: T, cb: Function, that?: any): void {
+  on(event: T, cb: (args: E[T]) => void, that?: any): void {
     if (typeof cb !== "function") {
       throw new TypeError("回调必须是函数类型");
     }
@@ -41,7 +41,7 @@ export class EventDispatch<T extends string> {
    * @param event 事件名称
    * @param args 传递给回调的参数
    */
-  fire(event: T, ...args: any[]): void {
+  fire(event: T, args?: E[T]): void {
     const eventList = this.events[event];
     if (!eventList || eventList.length === 0) return;
 
@@ -52,7 +52,11 @@ export class EventDispatch<T extends string> {
 
     callbacks.forEach((item) => {
       // 执行回调并绑定上下文
-      item.cb.apply(item.that ?? this, args);
+      if (item.that) {
+        item.cb.apply(item.that, args);
+      } else {
+        item.cb(args);
+      }
       // 非一次性回调保留
       if (!item.once) {
         remaining.push(item);
@@ -68,7 +72,7 @@ export class EventDispatch<T extends string> {
    * @param event 事件名称
    * @param cb 回调函数
    */
-  once(event: T, cb: Function, that?: any): void {
+  once(event: T, cb: (args: E[T]) => void, that?: any): void {
     if (typeof cb !== "function") {
       throw new TypeError("回调必须是函数类型");
     }
