@@ -32,12 +32,11 @@ onMounted(async () => {
   const render = new CanvasRender(el);
   const group = new CanvasGroup();
   render.add(group);
-
-  new Array(120000).fill(0).map(() => {
+  new Array(8000).fill(0).map(() => {
     const circle = new ZCircle({
-      x: Math.random() * 6000,
-      y: Math.random() * 6000,
-      radius: 2,
+      x: Math.random() * 1920,
+      y: Math.random() * 1080,
+      radius: 3,
       style: { strokeColor: "red", weight: 2 },
     });
     group.add(circle);
@@ -46,15 +45,16 @@ onMounted(async () => {
   group.on("mousemove", (e: any) => {
     e.children.forEach((el: ZElementBase) => {
       el.attr('style.strokeColor', 'green');
-      el.attr('radius', Math.random() * 20 + 5);
+      el.attr('style.weight', 4);
+      el.attr('radius',Math.floor( Math.random() * 2) + 5);
+      // group.remove(el);
     });
-    render.dirty();
     // const a = group.getDirtyRect();
-    if (a) {
-      // 脏矩形算法测试
-      // const { x, y, width, height } = a;
-      // render.brush.drawRect([x - width / 2, y - height / 2], width, height);
-    }
+    // if (a) {
+    //   // 脏矩形算法测试
+    //   const { x, y, width, height } = a;
+    //   render.brush.drawRect([x - width / 2, y - height / 2], width, height);
+    // }
   });
 });
 </script>

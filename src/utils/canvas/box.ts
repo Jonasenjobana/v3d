@@ -73,7 +73,10 @@ export class ABBox {
   boxPolygon: [number, number][] = [];
   /**碰撞盒子 圆形*/
   radius: number = -1;
-  constructor(data?: any) {
+  /**安全范围补偿 */
+  saveRange: number = 0;
+  constructor(data?: any, saveRange = 0) {
+    this.saveRange = saveRange;
     this.data = data;
     this.isEmpty = true;
     this.setEmpty();
@@ -102,14 +105,14 @@ export class ABBox {
   }
   updateRbush(rbush?: { minX: number; minY: number; maxX: number; maxY: number; data?: any }) {
     const { minX, minY, maxX, maxY, data } = rbush || { minX: this.minX, minY: this.minY, maxX: this.maxX, maxY: this.maxY, data: this.data };
-    this.minX = minX;
-    this.minY = minY;
-    this.maxX = maxX;
-    this.maxY = maxY;
-    this.width = maxX - minX;
-    this.height = maxY - minY;
-    this.x = maxX - this.width / 2;
-    this.y = maxY - this.height / 2;
+    this.minX = minX - this.saveRange;
+    this.minY = minY - this.saveRange;
+    this.maxX = maxX + this.saveRange;
+    this.maxY = maxY + this.saveRange;
+    this.width = this.maxX - this.minX;
+    this.height = this.maxY - this.minY;
+    this.x = this.maxX - this.width / 2;
+    this.y = this.maxY - this.height / 2;
     this.data = data;
     this.isEmpty = false;
     return this;
@@ -140,7 +143,13 @@ export class ABBox {
       return baseHit;
     }
   }
+  intersects(abox: { minX: number; minY: number; maxX: number; maxY: number }) {
+    return abox.minX < this.maxX && abox.maxX > this.minX && abox.minY < this.maxY && abox.maxY > this.minY;
+  }
   clone() {
-    return new ABBox().updateRbush(this.rbush);
+    const cloneElement = new ABBox().updateRbush(this.rbush);
+    cloneElement.radius = this.radius;
+    cloneElement.boxPolygon = this.boxPolygon;
+    return cloneElement;
   }
 }

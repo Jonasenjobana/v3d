@@ -43,7 +43,7 @@ export class CanvasRender {
     this.tick = new AnimeTick();
     this.tick.event.on("tick", () => {
       if (this.isDirty) {
-        this.dirty();
+        this.render();
       }
       this.event.fire("tick");
     });
@@ -78,7 +78,7 @@ export class CanvasRender {
   }
   protected update() {
     this.isDirty = false;
-    const {minX, minY, maxX, maxY} = this.renderClipBox;
+    const {minX, minY, maxX, maxY} = this.dirtyAbbox || new ABBox();
     this.brush.clearRect(minX, minY, maxX - minX, maxY - minY);
     this.brush.clip([[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]], () => {
       this.brush.setBrushOption({ strokeColor: ['red', 'green', 'blue'][Math.floor(Math.random() * 3)]}, () => {
@@ -89,13 +89,22 @@ export class CanvasRender {
       });
     })
   }
-  dirty() {
+  render() {
     cancelAnimationFrame(this.renderTask);
+    console.time('start')
     this.renderTask = requestAnimationFrame(() => {
-      this.updateRBush();
-      this.updateDirtyGroup();
+      if (this.isDirty) {
+        this.updateRBush();
+        this.updateDirtyGroup();
+      }
       this.update();
+      console.timeEnd('start')
     });
+  }
+  dirty() {
+    this.isDirty = true;
+    cancelAnimationFrame(this.renderTask);
+    this.renderTask = requestAnimationFrame(() => this.render());
   }
   updateDirtyGroup() {
     const dirtyABBox = new ABBox();
@@ -111,7 +120,7 @@ export class CanvasRender {
       group.onAdd();
       this.rbushIns.insert(group.hitBox.rbush);
       this.groupList.push(group);
-      this.dirty();
+      this.render();
     }
   }
   remove(group: CanvasGroup) {
@@ -121,7 +130,7 @@ export class CanvasRender {
       group.onRemove();
       group.render = null;
       this.groupList.splice(index, 1);
-      this.dirty();
+      this.render();
     }
   }
   updateRBush() {
