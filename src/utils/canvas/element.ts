@@ -6,6 +6,7 @@ export abstract class ZElementBase extends EventDisplayObject implements ZCanvas
   abstract type: string;
   abstract update(brush: CanvasBrush): void;
   abstract hitBoxUpdate(): void;
+
   z: number = 0;
   defaultStyle: Partial<ZCanvas.ZElementStyle> = { strokeColor: "black", weight: 2, fillColor: undefined };
   dirty: boolean = true;
@@ -32,6 +33,9 @@ export abstract class ZElementBase extends EventDisplayObject implements ZCanvas
       }
       params = params[key];
     }
+    this.callDirty();
+  }
+  callDirty() {
     this.prevABBox = this.hitBox.clone();
     this.hitBoxUpdate();
     this.dirty = true;
@@ -40,7 +44,7 @@ export abstract class ZElementBase extends EventDisplayObject implements ZCanvas
 }
 export class ZCircle extends ZElementBase {
   type: "circle" = "circle";
-  constructor(config: Partial<ZCanvas.ZCircle>) {
+  constructor(config: Partial<ZCircle>) {
     super();
     Object.assign(this, config);
     this.hitBox = new ABBox(this, 4);
@@ -51,14 +55,15 @@ export class ZCircle extends ZElementBase {
   radius!: number;
   style!: Partial<ZCanvas.ZElementStyle>;
   update(brush: CanvasBrush) {
-    const { strokeColor, weight } = this.style;
+    const { strokeColor, weight = 1 } = this.style;
     brush.setBrushOption({ strokeColor, weight }, () => {
-      brush.drawCircle([this.x, this.y], this.radius);
+      brush.drawCircle([this.x, this.y], this.radius + weight);
     });
     this.dirty = false;
   }
   hitBoxUpdate() {
-    this.hitBox.updateRadius([this.x, this.y], this.radius);
+    const { strokeColor, weight = 1 } = this.style;
+    this.hitBox.updateRadius([this.x, this.y], this.radius + weight);
   }
 }
 export class ZCustom extends ZElementBase {

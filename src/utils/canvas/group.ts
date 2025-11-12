@@ -7,6 +7,8 @@ import type { CanvasBrush } from "./brush";
 import { EventDisplayObject } from "./EventTree";
 import type { ZElementBase } from "./element";
 export interface CanvasGroupConfig {
+  stopPropagation: boolean;
+  interactive: boolean;
   zlevel: number;
   z: number;
 }
@@ -22,9 +24,10 @@ export class CanvasGroup extends EventDisplayObject {
   }
   constructor(config?: Partial<CanvasGroupConfig>) {
     super();
+    Object.assign(this, config);
     this.event.on("dirty", () => {
-      this.render?.dirty();
       this.updateRBush();
+      this.render?.dirty();
     });
   }
   /**脏元素 视图内获取最小aabbox 所有在该区域图层都重绘 */

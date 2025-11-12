@@ -13,6 +13,7 @@ import { scaleTemplatePath } from "@/utils/canvas/common/common";
 import { CanvasRender } from "@/utils/canvas/render";
 import { CanvasGroup } from "@/utils/canvas/group";
 import { ZCircle, ZElementBase } from "@/utils/canvas/element";
+import gsap from 'gsap';
 // detail edit 0 | 1  copy cancel default 0 1 2
 const canvasRef = ref();
 let ctx!: CanvasRenderingContext2D;
@@ -31,24 +32,26 @@ onMounted(async () => {
   const el = canvasRef.value as HTMLCanvasElement;
   const render = new CanvasRender(el);
   const group = new CanvasGroup();
-  const group2 = new CanvasGroup();
+  const group2 = new CanvasGroup({stopPropagation: true, z: 100});
   render.add(group);
   render.add(group2);
-  new Array(1000).fill(0).map(() => {
+  new Array(1).fill(0).map(() => {
     const circle = new ZCircle({
-      x: Math.random() * 1920,
+      x: 1000,
       y: Math.random() * 1080,
       radius: 3,
       style: { strokeColor: "red", weight: 2 },
     });
+    gsap.to(circle, { x: 0, onUpdate: () => circle.callDirty(), duration: 4 });
     group.add(circle);
   });
-  new Array(1000).fill(0).map(() => {
+  new Array(1).fill(0).map(() => {
     const circle = new ZCircle({
       x: Math.random() * 1920,
       y: Math.random() * 1080,
       radius: 10,
       style: { strokeColor: "blue", weight: 2 },
+      stopPropagation: true
     });
     group2.add(circle);
   });

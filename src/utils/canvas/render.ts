@@ -20,6 +20,7 @@ export class CanvasRender {
   /**边界 */
   boundRect: { x: number; y: number; width: number; height: number } = { x: 0, y: 0, width: 0, height: 0 };
   dirtyAbbox?: ABBox
+  isRenderring: boolean = false;
   /**裁剪 */
   get renderClipBox(): { minX: number; minY: number; maxX: number; maxY: number } {
     const { width, height } = this.boundRect;
@@ -75,7 +76,7 @@ export class CanvasRender {
   }
   eventDispatch(event: BaseEvent, e: MouseEvent) {
     const { offsetX, offsetY } = e;
-    this.rbushIns.search({ minX: offsetX, minY: offsetY, maxX: offsetX, maxY: offsetY }).filter((rbush) => {
+    this.rbushIns.search({ minX: offsetX, minY: offsetY, maxX: offsetX, maxY: offsetY }).sort((a, b) => b.data.zlevel - a.data.zlevel).filter((rbush) => {
       const { data } = rbush;
       data.fire("event_tree", { type: event, point: { x: offsetX, y: offsetY } });
     });
@@ -87,7 +88,7 @@ export class CanvasRender {
     this.brush.clearRect(minX, minY, maxX - minX, maxY - minY);
     this.brush.clip([[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]], () => {
       this.brush.setBrushOption({ strokeColor: ['red', 'green', 'blue'][Math.floor(Math.random() * 3)]}, () => {
-        // this.brush.drawRect([minX, minY], maxX - minX, maxY - minY)
+        this.brush.drawRect([minX, minY], maxX - minX, maxY - minY)
       })
       this.groupSortList.forEach((group) => {
         group.update();
@@ -96,6 +97,8 @@ export class CanvasRender {
     console.log('update===========================')
   }
   render() {
+    if (this.isRenderring) return;
+    this.isRenderring = true;
     cancelAnimationFrame(this.renderTask);
     console.time('start')
     this.renderTask = requestAnimationFrame(() => {
@@ -104,13 +107,13 @@ export class CanvasRender {
         this.updateDirtyGroup();
       }
       this.update();
+      this.isRenderring = false;
       console.timeEnd('start')
     });
   }
   dirty() {
     this.isDirty = true;
-    cancelAnimationFrame(this.renderTask);
-    this.renderTask = requestAnimationFrame(() => this.render());
+    this.render()
   }
   updateDirtyGroup() {
     const dirtyABBox = new ABBox();
