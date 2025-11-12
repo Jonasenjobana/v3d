@@ -77,6 +77,9 @@ export class CanvasGroup extends EventDisplayObject {
     }
     return dirtyBox;
   }
+  updateDirtyBox(abBox: ABBox) {
+    this.rbushIns.search(abBox.rbush).forEach((el) => (el.data.dirty = true));
+  }
   protected _setDirtyRect(dirtyElements: ZElementBase[], dirtyBox: ABBox): ABBox {
     if (dirtyElements.length == 0) return dirtyBox;
     dirtyElements.forEach((el) => {

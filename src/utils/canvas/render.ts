@@ -68,13 +68,18 @@ export class CanvasRender {
   /**
    * 更新鼠标状态
    */
-  updateCursor() {}
+  updateCursor() {
+    let cursor = "default";
+    this.groupSortList.forEach((group) => cursor = group.cursor ?? cursor);
+    document.body.style.cursor = cursor;
+  }
   eventDispatch(event: BaseEvent, e: MouseEvent) {
     const { offsetX, offsetY } = e;
     this.rbushIns.search({ minX: offsetX, minY: offsetY, maxX: offsetX, maxY: offsetY }).filter((rbush) => {
       const { data } = rbush;
       data.fire("event_tree", { type: event, point: { x: offsetX, y: offsetY } });
     });
+    this.updateCursor();
   }
   protected update() {
     this.isDirty = false;
@@ -113,6 +118,7 @@ export class CanvasRender {
     });
     dirtyABBox.mergeABBox(rectBox);
     this.dirtyAbbox = dirtyABBox;
+    this.groupSortList.forEach((group) => group.updateDirtyBox(dirtyABBox));
   }
   add(group: CanvasGroup) {
     if (this.groupList.indexOf(group) === -1) {

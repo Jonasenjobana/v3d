@@ -12,6 +12,7 @@ export abstract class EventDisplayObject extends EventDispatch<ZCanvas.MouseEven
   stopPropagation: boolean = false;
   children: EventDisplayObject[] = [];
   hitBox: ABBox = new ABBox(this);
+  cursor: string | null = null;
   constructor() {
     super();
     this.on("event_tree", (args: ZCanvas.MouseEventMap['event_tree']) => {
@@ -37,6 +38,7 @@ export abstract class EventDisplayObject extends EventDispatch<ZCanvas.MouseEven
         if (child.stopPropagation) break;
       }
     }
+    this.cursor = popupChildren.length ? 'pointer' : null;
     return popupChildren;
   }
   isHit(x: number, y: number) {
