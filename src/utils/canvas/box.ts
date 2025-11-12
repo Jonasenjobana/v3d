@@ -133,6 +133,10 @@ export class ABBox {
     }
     return this;
   }
+  /**
+   * 根据聚合特性构造更详细的包围盒 射线法计算有无在内部
+   * 挖空形状不支持
+   */
   isHit(x: number, y: number, hitRange: number = 0) {
     const baseHit = x >= this.minX - hitRange && x <= this.maxX + hitRange && y >= this.minY - hitRange && y <= this.maxY + hitRange;
     if (baseHit && this.boxPolygon.length > 0) {
@@ -143,6 +147,7 @@ export class ABBox {
       return baseHit;
     }
   }
+  /**检测盒子是否相交 */
   intersects(abox: { minX: number; minY: number; maxX: number; maxY: number }) {
     return abox.minX < this.maxX && abox.maxX > this.minX && abox.minY < this.maxY && abox.maxY > this.minY;
   }

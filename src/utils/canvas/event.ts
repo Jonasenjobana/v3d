@@ -1,6 +1,6 @@
-export class EventDispatch<T extends string, E extends Record<string, any>> {
+export class EventDispatch<E extends Record<string, any> = Record<string, void>> {
   // 事件存储结构: { 事件名: [{回调函数, 是否一次性}, ...] }
-  private events: Record<T, Array<{ cb: Function; once: boolean; that?: any }>>;
+  private events: Partial<Record<keyof E, Array<{ cb: (...args: any[]) => void; once: boolean; that?: unknown }>>>;
 
   constructor() {
     this.events = Object.create(null); // 初始化空对象存储事件
@@ -10,7 +10,7 @@ export class EventDispatch<T extends string, E extends Record<string, any>> {
    * @param event 事件名称
    * @param cb 回调函数
    */
-  on(event: T, cb: (args: E[T]) => void, that?: any): void {
+  on<K extends keyof E>(event: K, cb: (args: E[K]) => void, that?: any): void {
     if (typeof cb !== "function") {
       throw new TypeError("回调必须是函数类型");
     }
@@ -20,7 +20,7 @@ export class EventDispatch<T extends string, E extends Record<string, any>> {
       this.events[event] = [];
     }
 
-    this.events[event].push({ cb, once: false, that });
+    this.events[event]!.push({ cb, once: false, that });
   }
 
   /**
@@ -28,7 +28,7 @@ export class EventDispatch<T extends string, E extends Record<string, any>> {
    * @param event 事件名称
    * @param cb 要移除的回调函数
    */
-  off(event: T, cb: Function): void {
+  off<K extends keyof E>(event: K, cb: (args: E[K]) => void): void {
     const eventList = this.events[event];
     if (!eventList) return;
 
@@ -41,19 +41,19 @@ export class EventDispatch<T extends string, E extends Record<string, any>> {
    * @param event 事件名称
    * @param args 传递给回调的参数
    */
-  fire(event: T, args?: E[T]): void {
+  fire<K extends keyof E>(event: K, args?: E[K]): void {
     const eventList = this.events[event];
     if (!eventList || eventList.length === 0) return;
 
     // 复制一份当前回调列表（防止触发中修改原数组）
     const callbacks = [...eventList];
     // 存储需要保留的非一次性回调
-    const remaining: Array<{ cb: Function; once: boolean }> = [];
+    const remaining: Array<{ cb: (args: E[K]) => void; once: boolean, that?: unknown }> = [];
 
     callbacks.forEach((item) => {
       // 执行回调并绑定上下文
       if (item.that) {
-        item.cb.apply(item.that, args);
+        item.cb.apply(item.that, args ?? []);
       } else {
         item.cb(args);
       }
@@ -72,7 +72,7 @@ export class EventDispatch<T extends string, E extends Record<string, any>> {
    * @param event 事件名称
    * @param cb 回调函数
    */
-  once(event: T, cb: (args: E[T]) => void, that?: any): void {
+  once<K extends keyof E>(event: K, cb: (args: E[K]) => void, that?: any): void {
     if (typeof cb !== "function") {
       throw new TypeError("回调必须是函数类型");
     }
@@ -81,7 +81,7 @@ export class EventDispatch<T extends string, E extends Record<string, any>> {
       this.events[event] = [];
     }
 
-    this.events[event].push({ cb, once: true, that });
+    this.events[event]!.push({ cb, once: true, that });
   }
 
   /**

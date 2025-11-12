@@ -15,7 +15,7 @@ export class CanvasGroup extends EventDisplayObject {
   render: CanvasRender | null = null;
   type: string = "group";
   isDirty: boolean = false;
-  event: EventDispatch<"dirty", { dirty: void }> = new EventDispatch();
+  event: EventDispatch<{ dirty: void }> = new EventDispatch();
   rbushIns: rbush<{ data: ZElementBase }> = new rbush();
   get brush() {
     return this.render?.brush as CanvasBrush;

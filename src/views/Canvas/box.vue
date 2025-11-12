@@ -47,16 +47,16 @@ onMounted(async () => {
     const circle = new ZCircle({
       x: Math.random() * 1920,
       y: Math.random() * 1080,
-      radius: 3,
+      radius: 10,
       style: { strokeColor: "blue", weight: 2 },
     });
     group2.add(circle);
   });
-  group.on("mousemove", (e: any) => {
+  group.on("click", (e) => {
     e.children.forEach((el: ZElementBase) => {
       el.attr('style.strokeColor', 'green');
       el.attr('style.weight', 4);
-      el.attr('radius',Math.floor( Math.random() * 2) + 5);
+      el.attr('radius',Math.floor( Math.random() * 2) + 10);
       // group.remove(el);
     });
     // const a = group.getDirtyRect();
@@ -67,7 +67,7 @@ onMounted(async () => {
     // }
   });
   
-  group2.on("mousemove", (e: any) => {
+  group2.on("click", (e) => {
     e.children.forEach((el: ZElementBase) => {
       el.attr('style.strokeColor', 'green');
       el.attr('style.weight', 4);

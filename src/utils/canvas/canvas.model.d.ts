@@ -79,11 +79,11 @@ namespace ZCanvas {
   interface ZElementBaseConfig {
     z: number
   }
-  interface BaseEventParams<T, R> {
+  interface BaseEventParams<T = unknown, R = unknown> {
     type: string;
     point: { x: number, y: number };
-    target: T
-    children: R[]
+    target: EventDisplayObject
+    children: EventDisplayObject[]
   }
   interface MouseEventMap {
     'event_tree': { point: { x: number, y: number }; type: MouseEventName };

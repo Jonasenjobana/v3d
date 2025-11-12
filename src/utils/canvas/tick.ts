@@ -5,7 +5,7 @@ export class AnimeTick {
   constructor(public mainTick?: AnimeTick) {}
   animeFlag: number | null = null;
   performance: number = performance.now();
-  event: EventDispatch<"tick"> = new EventDispatch();
+  event: EventDispatch<{tick: { time: number; delta: number }}> = new EventDispatch();
   get timeSpace() {
     return 1000 / this.fps;
   }
@@ -35,7 +35,7 @@ export class AnimeTick {
     }
   }
   tick() {
-    this.event.fire("tick");
+    this.event.fire("tick", { time: performance.now(), delta: this.timeSpace });
   }
   anime(cb: (config: { time: number; delta: number }) => void) {
     this.event.on("tick", () => cb({ time: performance.now(), delta: this.timeSpace }));

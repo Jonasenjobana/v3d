@@ -5,13 +5,13 @@ import { CanvasGroup } from "./group";
 import { AnimeTick } from "./tick";
 import rbush from "rbush";
 export type BaseEvent = "click" | "mousedown" | "mouseup" | "mousemove";
-export type RenderEvent = "tick" | "render" | BaseEvent | `call_${BaseEvent}`;
+export type RenderEvent = "tick" | "render" | BaseEvent;
 // 分发 （内部处理层级 关系以及 停止冒泡之类的操作）
 // 冒泡事件 （外部需要订阅
 export class CanvasRender {
   brush: CanvasBrush;
   tick: AnimeTick;
-  event: EventDispatch<RenderEvent, { tick: void; click: MouseEvent; mousedown: MouseEvent; mouseup: MouseEvent; mousemove: MouseEvent }> = new EventDispatch();
+  event: EventDispatch<{ tick: void; render: void; click: MouseEvent; mousedown: MouseEvent; mouseup: MouseEvent; mousemove: MouseEvent }> = new EventDispatch();
   isDirty: boolean = false;
   renderTask: number = 0;
   defaultGroup: CanvasGroup = new CanvasGroup();
@@ -41,7 +41,7 @@ export class CanvasRender {
     this.boundRect = { x: 0, y: 0, width, height };
     this.brush = new CanvasBrush(canvas);
     this.tick = new AnimeTick();
-    this.tick.event.on("tick", () => {
+    this.tick.event.on("tick", ({time, delta}) => {
       if (this.isDirty) {
         this.render();
       }
@@ -87,12 +87,13 @@ export class CanvasRender {
     this.brush.clearRect(minX, minY, maxX - minX, maxY - minY);
     this.brush.clip([[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]], () => {
       this.brush.setBrushOption({ strokeColor: ['red', 'green', 'blue'][Math.floor(Math.random() * 3)]}, () => {
-        this.brush.drawRect([minX, minY], maxX - minX, maxY - minY)
+        // this.brush.drawRect([minX, minY], maxX - minX, maxY - minY)
       })
       this.groupSortList.forEach((group) => {
         group.update();
       });
     })
+    console.log('update===========================')
   }
   render() {
     cancelAnimationFrame(this.renderTask);
