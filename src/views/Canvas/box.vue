@@ -42,7 +42,8 @@ onMounted(async () => {
       radius: 3,
       style: { strokeColor: "red", weight: 2 },
     });
-    gsap.to(circle, { x: 0, onUpdate: () => circle.callDirty(), duration: 4 });
+    // gsap 更新动画
+    gsap.to(circle, { x: 0, onUpdate: () => {circle.setDirty(); render.render()}, duration: 10 });
     group.add(circle);
   });
   new Array(1).fill(0).map(() => {

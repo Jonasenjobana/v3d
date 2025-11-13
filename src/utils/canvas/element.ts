@@ -33,13 +33,13 @@ export abstract class ZElementBase extends EventDisplayObject implements ZCanvas
       }
       params = params[key];
     }
-    this.callDirty();
+    this.setDirty();
+    this.event?.fire("dirty");
   }
-  callDirty() {
+  setDirty() {
     this.prevABBox = this.hitBox.clone();
     this.hitBoxUpdate();
     this.dirty = true;
-    this.event?.fire("dirty");
   }
 }
 export class ZCircle extends ZElementBase {

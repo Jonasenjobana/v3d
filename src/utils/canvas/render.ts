@@ -44,7 +44,7 @@ export class CanvasRender {
     this.tick = new AnimeTick();
     this.tick.event.on("tick", ({time, delta}) => {
       if (this.isDirty) {
-        this.render();
+        this.flush();
       }
       this.event.fire("tick");
     });
@@ -96,24 +96,27 @@ export class CanvasRender {
     })
     console.log('update===========================')
   }
-  render() {
+  flush() {
     if (this.isRenderring) return;
     this.isRenderring = true;
     cancelAnimationFrame(this.renderTask);
     console.time('start')
     this.renderTask = requestAnimationFrame(() => {
-      if (this.isDirty) {
-        this.updateRBush();
-        this.updateDirtyGroup();
-      }
-      this.update();
+      this.render();
       this.isRenderring = false;
       console.timeEnd('start')
     });
   }
+  render() {
+    if (this.isDirty) {
+      this.updateRBush();
+      this.updateDirtyGroup();
+    }
+    this.update();
+  }
   dirty() {
     this.isDirty = true;
-    this.render()
+    this.flush()
   }
   updateDirtyGroup() {
     const dirtyABBox = new ABBox();
@@ -130,7 +133,7 @@ export class CanvasRender {
       group.onAdd();
       this.rbushIns.insert(group.hitBox.rbush);
       this.groupList.push(group);
-      this.render();
+      this.flush();
     }
   }
   remove(group: CanvasGroup) {
@@ -140,7 +143,7 @@ export class CanvasRender {
       group.onRemove();
       group.render = null;
       this.groupList.splice(index, 1);
-      this.render();
+      this.flush();
     }
   }
   updateRBush() {
