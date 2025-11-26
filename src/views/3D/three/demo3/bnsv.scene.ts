@@ -31,7 +31,7 @@ export class BNSVScene extends L3Scene {
         scene.traverse((child: Object3D) => {
           if (child instanceof Mesh) {
             if (child.name == "4厂区地板") {
-              child.castShadow = true;
+              child.receiveShadow = true;
             }
           }
         })
@@ -50,7 +50,7 @@ export class BNSVScene extends L3Scene {
   }
   onResourceLoaded(list: L3ResourceContent<any>[]): void {
     list.forEach((res) => {
-      const { type, value } = res as L3ResourceContent<Texture>;
+      const { type, value, name } = res as L3ResourceContent<any>;
       switch (type) {
         case "hdr":
           value!.mapping = EquirectangularReflectionMapping;
@@ -58,6 +58,7 @@ export class BNSVScene extends L3Scene {
           break;
       }
     });
+    console.log("🚀 ~ BNSVScene ~ onResourceLoaded ~ list:", list)
   }
   onRenderChange(): void {
     const renderer = this.parent as L3Renderer;
@@ -84,6 +85,7 @@ export class BNSVScene extends L3Scene {
     const spotLight = new SpotLight(0xffffff);
     const spotLightHelper = new SpotLightHelper(spotLight)
     spotLight.intensity = 8.1
+    spotLight.castShadow = true;
     spotLightHelper.position.set(0,-.2,-2.1);
     this.scene.add(spotLight, spotLightHelper);
     L3Gui.on(spotLight, '聚光灯', [

@@ -9,6 +9,7 @@ import MobileRoute from "./mobile.route";
 import CssRoute from "./css.route";
 import Heatmap from "@/views/Canvas/heatmap.vue";
 import Box from "@/views/Canvas/box.vue";
+import Playground from "@/components/DynamicGrid/Playground.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   linkActiveClass: "wtf",
@@ -42,6 +43,11 @@ const router = createRouter({
       path: "/webgl",
       name: "webgl",
       component: () => import("@/views/3D/webgl/gl1.vue"),
+    },
+    {
+      path: '/grid',
+      name: 'grid',
+      component: Playground
     },
     {
       path: "/ai",

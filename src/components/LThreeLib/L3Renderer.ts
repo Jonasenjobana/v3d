@@ -1,4 +1,4 @@
-import { WebGLRenderer } from "three";
+import { WebGLRenderer, PCFSoftShadowMap } from "three";
 import { L3Event } from "./L3Event";
 import { L3Component } from "./L3Component";
 import { L3SceneManage } from "./Manage/L3SceneManage";
@@ -21,6 +21,7 @@ export class L3Renderer extends L3Component<L3RendererEvent> {
       logarithmicDepthBuffer: false,
     });
     this.render.shadowMap.enabled = true;
+    this.render.shadowMap.type = PCFSoftShadowMap;
     container.appendChild(this.render.domElement); // this.render.domElement
     this.resize();
     this.timer = new Timer();

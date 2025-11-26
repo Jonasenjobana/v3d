@@ -88,6 +88,11 @@ const items: Reactive<IVListItem[]> = reactive([
     prependIcon: "mdi-library",
     to: "/component",
   },
+  {
+    title: "Grid",
+    prependIcon: "mdi-library",
+    to: "/grid",
+  },
 ]);
 </script>
 
