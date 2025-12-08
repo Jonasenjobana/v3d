@@ -31,7 +31,7 @@
     
     <!-- 尾部 -->
     <footer class="bg-gray-800 text-white p-4 text-center">
-      <p>&copy; 2023 Shader Map Application. All rights reserved.</p>
+      <p>&copy; 2025 Demo Application. All rights reserved.Powered by Trae.</p>
     </footer>
   </div>
 </template>

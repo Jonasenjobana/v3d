@@ -6,7 +6,10 @@
 </template>
 
 <script setup lang="ts">
+import { useDynamicComponents } from './hook/useDynamic/useDynamic';
+
 // App.vue 根组件
+useDynamicComponents({hostId: 'app-main'})
 </script>
 
 <style scoped>

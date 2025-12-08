@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex flex-col">
+  <div class="h-[calc(100vh-64px-56px-4rem)] flex flex-col">
     <h1 class="text-2xl font-bold mb-4">地图页面</h1>
     <div id="map" class="flex-1"></div>
   </div>

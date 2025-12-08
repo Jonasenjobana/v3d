@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 import Layout from '../components/Layout.vue'
-import FullScreenLayout from '../components/FullScreenLayout.vue'
 import HomePage from '../pages/HomePage.vue'
 import MapPage from '../pages/MapPage.vue'
 import ThreePage from '../pages/ThreePage.vue'
@@ -23,7 +22,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   { 
     path: '/map', 
-    component: FullScreenLayout, // 使用全屏Layout
+    component: Layout, // 使用全屏Layout
     children: [
       { 
         path: '', 
