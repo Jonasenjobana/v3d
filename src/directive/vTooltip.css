@@ -1,0 +1,49 @@
+.tooltip {
+    position: fixed;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 9999;
+    top: -9999px;
+    left: -9999px;
+}
+/* 小菱形 */
+.tooltip::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+.tooltip-top::after {
+    border-width: 5px 5px 0 5px;
+    border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.tooltip-bottom::after {
+    border-width: 0 5px 5px 5px;
+    border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.tooltip-left::after {
+    border-width: 5px 0 5px 5px;
+    border-color: transparent transparent transparent rgba(0, 0, 0, 0.8);
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+}
+.tooltip-right::after {
+    border-width: 5px 5px 5px 0;
+    border-color: transparent rgba(0, 0, 0, 0.8) transparent transparent;
+    top: 50%;
+    left: -5px;
+    transform: translateY(-50%);
+}
+

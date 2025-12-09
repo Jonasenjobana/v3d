@@ -10,8 +10,10 @@
       <button @click="add" class="z-1000">添加DYNAMIC</button>
     </div>
     <div class="left">
-      <BaseModal :dynamicComponent="dynamic2" :title="dynamic.props.title" :id="dynamic2.props!.id"></BaseModal>
+      <span ref="spanRef" style="margin-left: 200px;" v-tooltip="{ tip: '这是一个提示', position: 'top' }">添加DYNAMIC</span>
+      <!-- <BaseModal :dynamicComponent="dynamic2" :title="dynamic.props.title" :id="dynamic2.props!.id"></BaseModal> -->
     </div>
+    <!-- <ToolTipComponent v-if="spanRef" tip="这是一个提示" :anchor="spanRef" :position="'left'"></ToolTipComponent> -->
   </div>
 </template>
 
@@ -19,15 +21,19 @@
 import ToolPage from "@/pages/ToolPage.vue";
 import WindowBar from "@/hook/usePinia/panel/WindowBar.vue";
 import BaseModal from "@/components/DynamicLayout/BaseModal/BaseModal.vue";
+import {vTooltip} from "@/directive/vTooltip";
 import type { DynamicComponentItem } from "@/hook/useDynamic/model";
 import TestSlotComponent from "@/hook/useDynamic/TestSlotComponent.vue";
-import { getCurrentInstance, onMounted, ref, shallowRef } from "vue";
+import { getCurrentInstance, onMounted, ref, shallowRef, type Ref } from "vue";
 import { createBaseModal } from "@/components/DynamicLayout/BaseModal/useModal";
 import { useDynamicComponents } from "@/hook/useDynamic/useDynamic";
 import BasePanel from "@/hook/usePinia/panel/BasePanel.vue";
+import { ToolTipComponent } from "@/directive/vTooltip";
+const spanRef: Ref<HTMLElement | null> = ref(null);
 const currentInstance = getCurrentInstance();
 onMounted(() => {
   console.log("🚀 ~ currentInstance?.vnode:", currentInstance);
+  console.log("🚀 ~ spanRef:", spanRef);
 });
 useDynamicComponents({ hostId: "wtf" });
 const dynamic = shallowRef({
@@ -67,7 +73,7 @@ function add() {
       ...dynamic2.value.props,
       dynamicItem: [...dynamic2.value.props!.dynamicItem, dynamic3],
     },
-  }
+  };
 }
 </script>
 
