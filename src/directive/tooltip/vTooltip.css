@@ -10,6 +10,35 @@
     top: -9999px;
     left: -9999px;
 }
+
+/* 过渡动画效果 */
+.tooltip-enter-active,
+.tooltip-leave-active {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.tooltip-enter-from,
+.tooltip-leave-to {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+/* 不同方向的进入动画起点 */
+.tooltip-enter-from.tooltip-top {
+    transform: translateY(5px) scale(0.8);
+}
+
+.tooltip-enter-from.tooltip-bottom {
+    transform: translateY(-5px) scale(0.8);
+}
+
+.tooltip-enter-from.tooltip-left {
+    transform: translateX(5px) scale(0.8);
+}
+
+.tooltip-enter-from.tooltip-right {
+    transform: translateX(-5px) scale(0.8);
+}
 /* 小菱形 */
 .tooltip::after {
     content: '';

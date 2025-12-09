@@ -1,4 +1,4 @@
-import { createRenderer, defineComponent, h, onMounted, onUnmounted, ref, render, Teleport, toValue, watch, watchEffect, type PropType } from "vue";
+import { createRenderer, defineComponent, h, onMounted, onUnmounted, ref, render, Teleport, toValue, Transition, watch, watchEffect, type PropType } from "vue";
 import './vTooltip.css'
 
 export const ToolTipComponent = defineComponent({
@@ -18,6 +18,7 @@ export const ToolTipComponent = defineComponent({
         }
     },
     setup(props) {
+        const randomId = Math.random().toString(36).substring(2, 8);
         const { tip, position, anchor } = props;
         const visible = ref(false);
         const dirRef = ref(position);
@@ -29,7 +30,7 @@ export const ToolTipComponent = defineComponent({
         }
         // 判断tooltip是否被body遮挡
         function isTooltipVisible() {
-            const tooltip = document.querySelector('.tooltip') as HTMLElement;
+            const tooltip = document.querySelector(`.tooltip-${randomId}`) as HTMLElement;
             const tooltipRect = tooltip.getBoundingClientRect();
             const bodyRect = document.body.getBoundingClientRect();
             return tooltipRect.top >= bodyRect.top && tooltipRect.bottom <= bodyRect.bottom &&
@@ -39,7 +40,7 @@ export const ToolTipComponent = defineComponent({
             const value = toValue(visible);
             if (value && anchor) {
                 const rect = anchor.getBoundingClientRect();
-                const tooltip = document.querySelector('.tooltip') as HTMLElement;
+                const tooltip = document.querySelector(`.tooltip-${randomId}`) as HTMLElement;
                 const directions = ['top', 'bottom', 'left', 'right'];
                 const startIndex = directions.indexOf(position);
                 let currentIndex = startIndex;
@@ -90,19 +91,22 @@ export const ToolTipComponent = defineComponent({
             visible,
             tip,
             anchor,
-            dirRef
+            dirRef,
+            randomId
         }
     },
     render() {
         return h(Teleport, {
             to: this.anchor
         }, [
-            h('div', {
-                class: `tooltip tooltip-${this.dirRef}`,
-                style: {
-                    display: this.visible ? 'block' : 'none'
-                }
-            }, this.tip)
+            h(Transition, {
+                name: 'tooltip',
+                appear: true
+            }, () => [
+                this.visible && h('div', {
+                    class: `tooltip tooltip-${this.dirRef} tooltip-${this.randomId}`
+                }, this.tip)
+            ])
         ])
     }
 })
